@@ -1,0 +1,80 @@
+const router = require('koa-router')()
+router.prefix('/home')
+const sleep = require('../util/sleep')
+const sql = require('../util/sql_client')
+
+// 标签相关接口
+router.get('/blogTag', async function(ctx, next) {
+  let blogTagList = await sql('blog_tag').select('*').orderBy('id', 'desc').timeout(10000)
+    // await sleep(2000)
+  ctx.body = {
+    code: 200,
+    data: {
+      blogTagList
+    }
+  }
+})
+
+// 分类相关接口
+router.get('/blogClass', async function(ctx, next) {
+  let blogClassList = await sql('blog_class').select('*').timeout(10000)
+    // await sleep(2000)
+  ctx.body = {
+    code: 200,
+    data: {
+      blogClassList
+    }
+  }
+})
+
+// 博客相关接口
+router.get('/', async function(ctx, next) {
+  let {
+    query
+  } = ctx
+  let {
+    page = 1, pagesize = 10
+  } = query
+  let blogList = await sql('blog_list').select(['id', 'title', 'tags_text', 'class_id', 'update_time', 'is_top', 'is_disabled']).limit(pagesize).offset((page - 1) * pagesize).orderBy('id', 'desc').timeout(10000)
+  let [{
+    blogCount
+  }] = await sql('blog_list').count('* as blogCount')
+
+  // await sleep(2000)
+  ctx.body = {
+    code: 200,
+    data: {
+      blogList,
+      blogCount
+    }
+  }
+})
+
+router.get('/detail', async function(ctx, next) {
+  let {
+    id
+  } = ctx.query
+  let blogList = await sql('blog_list').select('*').where({
+    id
+  }).timeout(10000)
+  ctx.body = {
+    code: 200,
+    data: {
+      editItem: blogList[0]
+    }
+  }
+})
+
+//获取首页音乐
+router.get('/music', async function(ctx, next) {
+  let musicList = await sql('music_list').select('*').orderByRaw('RAND()').timeout(10000)
+    // await sleep(2000)
+  ctx.body = {
+    code: 200,
+    data: {
+      musicList
+    }
+  }
+})
+
+module.exports = router
