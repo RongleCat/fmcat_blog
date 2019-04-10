@@ -100,11 +100,6 @@
       } = await this.$axios('/fmcat/blog/blogClass')
       Object.assign(this,{blogList,blogCount,blogClassList})
     },
-    filters: {
-      dataFormat(value, format = 'YYYY-MM-DD HH:mm:ss') {
-        return dayjs(value).format(format)
-      }
-    },
     computed: {
       checkSelectEmpty() {
         return !this.multipleSelection.length

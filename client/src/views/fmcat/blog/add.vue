@@ -11,7 +11,17 @@
         </el-col>
         <el-col :span="3">
           <div class="grid-content bg-purple">
-            <el-button icon="el-icon-plus" class="btn-addcover">添加封面</el-button>
+            <el-popover placement="top" trigger="hover">
+              <img v-if="coverUrl" :src="coverUrl" class="cover-img">
+              <span class="tip-text" v-else>未添加封面</span>
+              <el-button
+                icon="el-icon-plus"
+                class="btn-addcover"
+                @click="openCoverSelect"
+                slot="reference"
+              >{{coverUrl?'已添加':'添加封面'}}</el-button>
+            </el-popover>
+            <input type="file" style="display:none" ref="up_cover" @change="selectDone">
           </div>
         </el-col>
         <el-col :span="4">
@@ -42,7 +52,7 @@
       <mavon-editor
         codeStyle="atom-one-dark"
         :toolbars="toolbars"
-        @imgAdd="imageUpload"
+        @imgAdd="editorUpload"
         @save="submit"
         @change="editContent"
         ref="md"
@@ -63,6 +73,7 @@ export default {
       saveing: false,
       tagSeleted: [],
       tagsText: "",
+      coverUrl: null,
       toolbars: {
         bold: true, // 粗体
         italic: true, // 斜体
@@ -98,8 +109,8 @@ export default {
         subfield: true, // 单双栏模式
         preview: true // 预览
       },
-      blogTagList:null,
-      blogClassList:null
+      blogTagList: null,
+      blogClassList: null
     };
   },
   async mounted() {
@@ -140,13 +151,24 @@ export default {
       }
       this.tagsText = res.join(",");
     },
-    async imageUpload(pos, $file) {
+    async editorUpload(pos, $file) {
       let that = this;
       let $vm = this.$refs.md;
       let add_loading = that.$loading({
         target: $vm.$el
       });
-      let filename = "blog_images/" + $file.name;
+      try {
+        let url = await this.imageUpload($file, "blog_images/");
+        $vm.$img2Url(pos, url);
+        add_loading.close();
+      } catch (error) {
+        add_loading.close();
+        console.log(error);
+      }
+    },
+    async imageUpload($file, path) {
+      let that = this;
+      let filename = path + $file.name;
       let formData = new FormData();
       let {
         data: { ossPolicy }
@@ -159,25 +181,26 @@ export default {
       formData.append("callback", "");
       formData.append("signature", ossPolicy.signature);
       formData.append("file", $file);
-      this.$axios({
-        url: ossPolicy.host,
-        method: "post",
-        data: formData,
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      })
-        .then(r => {
-          $vm.$img2Url(pos, `http://static.fmcat.top/${filename}`);
-          add_loading.close();
+      return new Promise((resolve, reject) => {
+        this.$axios({
+          url: ossPolicy.host,
+          method: "post",
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
         })
-        .catch(err => {
-          this.$notify.error({
-            title: "错误",
-            message: "文件上传错误，请稍后重试"
+          .then(r => {
+            resolve(`http://static.fmcat.top/${filename}`);
+          })
+          .catch(err => {
+            this.$notify.error({
+              title: "错误",
+              message: "文件上传错误，请稍后重试"
+            });
+            reject(err);
           });
-          add_loading.close();
-        });
+      });
     },
     editContent(markdown, html) {
       this.blogMarkdown = markdown;
@@ -193,7 +216,9 @@ export default {
         tags_id: that.tagSeleted.join(","),
         tags_text: that.tagsText
       };
-      console.log(post);
+      if (that.coverUrl) {
+        post.cover = that.coverUrl;
+      }
       if (!post.title) {
         that.$message.error("标题必须写，写多少心里没数么");
         return false;
@@ -242,6 +267,17 @@ export default {
           console.log("取消发布");
           that.saveing = false;
         });
+    },
+    openCoverSelect() {
+      this.$refs.up_cover.dispatchEvent(new MouseEvent("click"));
+    },
+    async selectDone(e) {
+      let cover_loading = this.$loading({
+        target: ".color-block"
+      });
+      let url = await this.imageUpload(e.target.files[0], "blog_cover/");
+      cover_loading.close();
+      this.coverUrl = url;
     }
   }
 };
@@ -267,5 +303,13 @@ export default {
 .btn-addcover {
   width: 100%;
   padding: 12px 10px;
+}
+.tip-text{
+  text-align: center;
+  display: block;
+}
+.cover-img{
+  display: block;
+  max-width: 400px;
 }
 </style>

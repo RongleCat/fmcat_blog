@@ -28,14 +28,14 @@ router.get('/blogClass', async function(ctx, next) {
 })
 
 // 博客相关接口
-router.get('/', async function(ctx, next) {
+router.get('/blogList', async function(ctx, next) {
   let {
     query
   } = ctx
   let {
     page = 1, pagesize = 10
   } = query
-  let blogList = await sql('blog_list').select(['id', 'title', 'tags_text', 'class_id', 'update_time', 'is_top', 'is_disabled']).limit(pagesize).offset((page - 1) * pagesize).orderBy('id', 'desc').timeout(10000)
+  let blogList = await sql('blog_list').select(['id', 'title', 'cover', 'tags_text', 'class_id', 'update_time', 'is_top', 'is_disabled']).limit(pagesize).offset((page - 1) * pagesize).orderBy('id', 'desc').timeout(10000)
   let [{
     blogCount
   }] = await sql('blog_list').count('* as blogCount')
@@ -50,7 +50,7 @@ router.get('/', async function(ctx, next) {
   }
 })
 
-router.get('/detail', async function(ctx, next) {
+router.get('/blogDetail', async function(ctx, next) {
   let {
     id
   } = ctx.query
@@ -59,9 +59,7 @@ router.get('/detail', async function(ctx, next) {
   }).timeout(10000)
   ctx.body = {
     code: 200,
-    data: {
-      editItem: blogList[0]
-    }
+    data: blogList[0]
   }
 })
 

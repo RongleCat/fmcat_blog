@@ -18,7 +18,9 @@ const _axios = axios.create(config);
 
 _axios.interceptors.request.use(
   function(config) {
-    config.url = 'https://api.fmcat.top' + config.url
+    if (config.url.indexOf('http') === -1) {
+      config.url = 'https://api.fmcat.top' + config.url
+    }
     return config;
   },
   function(error) {

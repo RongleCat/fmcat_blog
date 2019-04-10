@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import store from './store';
 import HomeContainer from './views/index.vue'
 import HomeIndex from './views/index/index.vue'
-import HomeBlog from './views/index/blog.vue'
+import HomeBlog from './views/index/blog/index.vue'
+import HomeBlogDetail from './views/index/blog/detail.vue'
 import HomeChat from './views/index/chat.vue'
 import HomeDesign from './views/index/design.vue'
 import HomeWorks from './views/index/works.vue'
@@ -77,6 +78,10 @@ export default new Router({
       path: "blog",
       component: HomeBlog,
       name: "index-blog"
+    }, {
+      path: "blog/:id",
+      component: HomeBlogDetail,
+      name: "index-blog-detail"
     }, {
       path: "chat",
       component: HomeChat,

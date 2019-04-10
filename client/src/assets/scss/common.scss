@@ -12,9 +12,76 @@
 }
 
 .el-table {
-  flex: none!important;
+  flex: none !important;
 }
 
 .el-table__body-wrapper {
   height: 100%;
+}
+
+
+/*滚动条整体样式*/
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+
+/*滚动条滑块*/
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #535353;
+  &:hover {
+    background: #888;
+  }
+}
+
+
+/*滚动条轨道*/
+
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hljs {
+  padding-left: 20px !important;
+  padding-bottom: 13px !important;
+  border-radius: 3px;
+}
+
+code {
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+}
+
+p code {
+  padding: 0.2em 0.8em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(27, 31, 35, 0.05);
+}
+
+.detail-content {
+  font-size: 14px;
+  h2,
+  h4,
+  h3,
+  p,
+  pre {
+    margin-bottom: 10px;
+  }
+  a {
+    text-decoration: none;
+    color: #409EFF;
+    transition: color .2s;
+    &:hover {
+      color: rgba(#409EFF, .8);
+    }
+  }
+  p {
+    line-height: 1.5em;
+  }
 }

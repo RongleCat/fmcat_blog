@@ -182,7 +182,8 @@ router.put('/edit', async function(ctx, next) {
     tags_id,
     tags_text,
     markdown,
-    html
+    html,
+    cover
   } = body
 
   try {
@@ -194,7 +195,8 @@ router.put('/edit', async function(ctx, next) {
       tags_id,
       tags_text,
       markdown,
-      html
+      html,
+      cover
     }).timeout(10000)
     ctx.body = {
       code: 200

@@ -3564,7 +3564,7 @@ highlight.js-async-webpack@^1.0.4:
   resolved "http://r.cnpmjs.org/highlight.js-async-webpack/download/highlight.js-async-webpack-1.0.4.tgz#c06b67bf99f049045d62b756e5855b0912ec616c"
   integrity sha1-wGtnv5nwSQRdYrdW5YVbCRLsYWw=
 
-highlight.js@^9.11.0:
+highlight.js@^9.11.0, highlight.js@^9.15.6:
   version "9.15.6"
   resolved "http://r.cnpmjs.org/highlight.js/download/highlight.js-9.15.6.tgz#72d4d8d779ec066af9a17cb14360c3def0aa57c4"
   integrity sha1-ctTY13nsBmr5oXyxQ2DD3vCqV8Q=

@@ -5,6 +5,8 @@ import store from './store'
 import './plugins/element'
 import './plugins/axios'
 import './plugins/vue-mavon-editor'
+import './plugins/highlight'
+import './plugins/filter'
 
 Vue.config.productionTip = false
 

@@ -1,15 +1,27 @@
 <template>
   <div class="bloglist-container">
-    <div class="class-container">
-      <div
-        class="item"
-        :class="[classIndex===index?'actived':'','item-'+(index+1)]"
-        @click="classSelect(index)"
-        v-for="(item,index) in classList"
-        :key="index"
-      >
-        <label>{{item.class_name}}</label>
-        <span>{{item.count}}</span>
+    <div class="container-body">
+      <div class="class-container">
+        <div
+          class="item"
+          :class="[classIndex===index?'actived':'','item-'+(index+1)]"
+          @click="classSelect(index)"
+          v-for="(item,index) in classList"
+          :key="index"
+        >
+          <label>{{item.class_name}}</label>
+          <span>{{item.count}}</span>
+        </div>
+      </div>
+      <div class="blog-body">
+        <div class="blog-list">
+          <div class="list-column">
+            <div class="item" v-for="(item,index) in blogList" :key="index">
+              <router-link :to="'/blog/'+item.id">{{item.title}}</router-link>
+            </div>
+          </div>
+        </div>
+        <div class="right-side"></div>
       </div>
     </div>
   </div>
@@ -20,15 +32,18 @@ export default {
   data() {
     return {
       classIndex: 0,
-      blogClassList: null
+      blogClassList: null,
+      blogList: [],
+      currentPage: 1
     };
   },
-  async mounted() {
+  async created() {
     let that = this;
     let {
       data: { blogClassList }
     } = await that.$axios.get("/home/blogClass");
     that.blogClassList = blogClassList;
+    that.getTableList(that.currentPage);
   },
   computed: {
     classList() {
@@ -47,6 +62,23 @@ export default {
   methods: {
     classSelect(index) {
       this.classIndex = index;
+    },
+    getTableList(page) {
+      let that = this;
+      this.currentPage = page;
+      let get_loading = that.$loading({
+        target: ".bloglist-container"
+      });
+      that
+        .$axios({
+          url: `/home/blogList?page=${page}&pagesize=10`
+        })
+        .then(r => {
+          let { data } = r;
+          that.blogCount = data.blogCount;
+          that.blogList = data.blogList;
+          get_loading.close();
+        });
     }
   }
 };
@@ -72,9 +104,13 @@ $colors: (
     color: #ff8c00
   );
 .bloglist-container {
-  background: #fff;
   height: 100%;
-  padding: 20px;
+  .container-body {
+    padding: 20px;
+    background: #fff;
+    max-width: 1200px;
+    min-height: 100%;
+  }
   .class-container {
     width: 100%;
     display: flex;
