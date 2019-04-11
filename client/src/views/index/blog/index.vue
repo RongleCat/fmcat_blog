@@ -1,28 +1,24 @@
 <template>
   <div class="bloglist-container">
-    <div class="container-body">
-      <div class="class-container">
-        <div
-          class="item"
-          :class="[classIndex===index?'actived':'','item-'+(index+1)]"
-          @click="classSelect(index)"
-          v-for="(item,index) in classList"
-          :key="index"
-        >
-          <label>{{item.class_name}}</label>
-          <span>{{item.count}}</span>
+    <div class="class-container">
+      <div
+        class="item"
+        :class="[classIndex===index?'actived':'','item-'+(index+1)]"
+        @click="classSelect(index)"
+        v-for="(item,index) in classList"
+        :key="index"
+      >
+        <label>{{item.class_name}}</label>
+        <span>{{item.count}}</span>
+      </div>
+    </div>
+    <div class="blog-body">
+      <div class="blog-list">
+        <div class="item" v-for="(item,index) in blogList" :key="index">
+          <router-link :to="'/blog/'+item.id">{{item.title}}</router-link>
         </div>
       </div>
-      <div class="blog-body">
-        <div class="blog-list">
-          <div class="list-column">
-            <div class="item" v-for="(item,index) in blogList" :key="index">
-              <router-link :to="'/blog/'+item.id">{{item.title}}</router-link>
-            </div>
-          </div>
-        </div>
-        <div class="right-side"></div>
-      </div>
+      <div class="right-side">1</div>
     </div>
   </div>
 </template>
@@ -104,13 +100,9 @@ $colors: (
     color: #ff8c00
   );
 .bloglist-container {
+  background: #fff;
+  padding: 20px;
   height: 100%;
-  .container-body {
-    padding: 20px;
-    background: #fff;
-    max-width: 1200px;
-    min-height: 100%;
-  }
   .class-container {
     width: 100%;
     display: flex;
@@ -175,4 +167,34 @@ $colors: (
     }
   }
 }
+.blog-body {
+  display: flex;
+  .blog-list {
+    flex: 5;
+    column-gap: 0;
+    .item {
+      break-inside: avoid;
+      width: 100%;
+    }
+    @media screen and (min-width: 2000px) {
+      column-count: 4;
+    }
+
+    @media screen and (max-width: 2000px) {
+      column-count: 4;
+    }
+
+    @media screen and (max-width: 1600px) {
+      column-count: 3;
+    }
+
+    @media screen and (max-width: 1200px) {
+      column-count: 2;
+    }
+  }
+  .right-side {
+    flex: 1;
+  }
+}
+
 </style>
