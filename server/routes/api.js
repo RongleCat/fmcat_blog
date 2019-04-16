@@ -14,4 +14,13 @@ router.get('/getOssToken', async function(ctx, next) {
   }
 })
 
+router.get('/getPrintData', async function(ctx, next) {
+  console.log(ctx.params);
+  console.log(ctx.body);
+  console.log(ctx.querys);
+  ctx.body = {
+    data: "OK"
+  }
+})
+
 module.exports = router
