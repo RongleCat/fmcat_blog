@@ -15,7 +15,12 @@
     <div class="blog-body">
       <div class="blog-list">
         <div class="item" v-for="(item,index) in blogList" :key="index">
-          <router-link :to="'/blog/'+item.id">{{item.title}}</router-link>
+          <router-link :to="'/blog/'+item.id">
+            <img :src="item.cover" alt="" v-if="item.cover">
+            <div class="item-info">
+              {{item.title}}
+            </div>
+          </router-link>
         </div>
       </div>
       <div class="right-side">1</div>
@@ -103,6 +108,8 @@ $colors: (
   background: #fff;
   padding: 20px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   .class-container {
     width: 100%;
     display: flex;
@@ -168,33 +175,63 @@ $colors: (
   }
 }
 .blog-body {
+  flex: 1;
   display: flex;
   .blog-list {
     flex: 5;
-    column-gap: 0;
+    width: 100%;
+    display: flex;
+    flex-wrap:wrap;
+    flex-shrink:0;
     .item {
       break-inside: avoid;
-      width: 100%;
+      background: #fff;
+      margin-bottom: 20px;
+      min-height: 150px;
+      padding-right: 20px;
+      a {
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        img{
+          width: 100%;
+          display: block;
+          height: 200px;
+          object-fit: cover;
+        }
+      }
     }
-    @media screen and (min-width: 2000px) {
-      column-count: 4;
+    
+    @media screen and (min-width: 2001px) and (max-width: 3000px) {
+      .item{
+        width: 25%;
+        &:nth-child(4n){
+          padding-right: 0;
+        }
+      }
     }
 
-    @media screen and (max-width: 2000px) {
-      column-count: 4;
+    @media screen and (min-width: 1201px) and (max-width: 2000px) {
+      .item{
+        width: 33%;
+        &:nth-child(3n){
+          padding-right: 0;
+        }
+      }
     }
 
-    @media screen and (max-width: 1600px) {
-      column-count: 3;
-    }
-
-    @media screen and (max-width: 1200px) {
-      column-count: 2;
+    @media screen and (min-width: 0px) and (max-width: 1200px) {
+      .item{
+        width: 50%;
+        &:nth-child(2n){
+          padding-right: 0;
+        }
+      }
     }
   }
   .right-side {
     flex: 1;
   }
 }
-
 </style>
