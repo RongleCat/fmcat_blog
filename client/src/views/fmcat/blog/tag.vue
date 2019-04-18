@@ -34,118 +34,118 @@
 export default {
   data() {
     return {
-      blogTagList:null
-    };
+      blogTagList: null
+    }
   },
-  async mounted(){
+  async mounted() {
     let {
       data: { blogTagList }
-    } = await this.$axios("/fmcat/blog/blogTag");
+    } = await this.$axios('/fmcat/blog/blogTag')
     this.blogTagList = blogTagList
   },
   methods: {
     editTag(index, row) {
-      let that = this;
+      let that = this
       that
-        .$prompt("请输入标签", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
+        .$prompt('请输入标签', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           inputValue: row.tag_name,
           inputPattern: /^[u4e00-\u9fa5a-zA-Z0-9]{1,12}$/,
-          inputErrorMessage: "标签长度2-12字符"
+          inputErrorMessage: '标签长度2-12字符'
         })
         .then(({ value }) => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogTag?id=" + row.id,
-              method: "put",
+              url: '/fmcat/blog/blogTag?id=' + row.id,
+              method: 'put',
               data: {
                 tag_name: value
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消添加");
-        });
+          console.log('取消添加')
+        })
     },
     deleteTag(index, row) {
-      let that = this;
+      let that = this
       that
-        .$confirm("此操作将永久删除该标签，文章关联将失效, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将永久删除该标签，文章关联将失效, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogTag",
-              method: "delete",
+              url: '/fmcat/blog/blogTag',
+              method: 'delete',
               data: {
                 id: row.id
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消删除");
-        });
+          console.log('取消删除')
+        })
     },
     addTag() {
-      let that = this;
+      let that = this
       that
-        .$prompt("请输入标签", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
+        .$prompt('请输入标签', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           inputPattern: /^[u4e00-\u9fa5a-zA-Z0-9]{1,12}$/,
-          inputErrorMessage: "标签长度2-12字符"
+          inputErrorMessage: '标签长度2-12字符'
         })
         .then(({ value }) => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogTag",
-              method: "post",
+              url: '/fmcat/blog/blogTag',
+              method: 'post',
               data: {
                 tag_name: value
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消添加");
-        });
+          console.log('取消添加')
+        })
     },
     getTagList() {
-      let that = this;
+      let that = this
       let add_loading = that.$loading({
-        target: ".tag-container"
-      });
-      that.$axios("/fmcat/blog/blogTag").then(r => {
-        add_loading.close();
-        that.blogTagList = r.data.blogTagList;
-      });
+        target: '.tag-container'
+      })
+      that.$axios('/fmcat/blog/blogTag').then(r => {
+        add_loading.close()
+        that.blogTagList = r.data.blogTagList
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

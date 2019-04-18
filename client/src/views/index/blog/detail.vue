@@ -1,5 +1,6 @@
 <template>
   <div class="blog-detail">
+    <div class="btn-back" @click="$router.replace('/blog')"><i class="iconfont icon-back"></i></div>
     <div class="block-content" v-highlight>
       <template v-if="detail">
         <h3 class="title">{{detail.title}}</h3>
@@ -22,60 +23,34 @@
 </template>
 
 <script>
-import day from "dayjs";
+import day from 'dayjs'
 export default {
   data() {
     return {
       detail: null,
       topBtnShow: false
-    };
+    }
   },
   async created() {
-    let { data } = await this.$axios(
-      "/home/blogDetail?id=" + this.$route.params.id
-    );
-    this.detail = data;
+    let { data } = await this.$axios('/home/blogDetail?id=' + this.$route.params.id)
+    this.detail = data
   },
   mounted() {
-    let that = this;
-    document
-      .querySelector(".blog-detail")
-      .addEventListener("scroll", function(e) {
-        if (e.target.scrollTop >= 1000) {
-          that.topBtnShow = true;
-        } else {
-          that.topBtnShow = false;
-        }
-      });
+    let that = this
+    document.querySelector('.blog-detail').addEventListener('scroll', function(e) {
+      if (e.target.scrollTop >= 1000) {
+        that.topBtnShow = true
+      } else {
+        that.topBtnShow = false
+      }
+    })
   },
   methods: {
     backTop() {
       document.querySelector('.blog-detail').scrollTop = 0
-      // let Tween = {
-      //   Linear: function(t, b, c, d) {
-      //     return (c * t) / d + b;
-      //   }
-      // }
-      // let $container = document.querySelector('.blog-detail')
-      // Math.tween = Tween;
-      // let t = 1;
-      // const b = $container.scrollTop;
-      // const c = 1;
-      // const d = .5;
-      // let timer;
-      // timer = requestAnimationFrame(function fn() {
-      //   if ($container.scrollTop > 0) {
-      //     t = t - 100;
-      //     const backTop = Tween.Linear(t, b, c, d);
-      //     $container.scrollTop = backTop;
-      //     timer = requestAnimationFrame(fn);
-      //   } else {
-      //     cancelAnimationFrame(timer);
-      //   }
-      // });
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -97,7 +72,7 @@ export default {
     }
     .info {
       font-size: 12px;
-      font-family: "宋体";
+      font-family: '宋体';
       color: #999;
       line-height: 40px;
       border-bottom: 3px solid #f0f0f0;
@@ -105,6 +80,29 @@ export default {
     .detail-content {
       padding: 10px 0;
     }
+  }
+}
+
+.btn-back{
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 60px;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc((100% - 900px - 100px) / 2);
+  min-width: 100px;
+  color: #ccc;
+  cursor: pointer;
+  transition: all .2s;
+  i{
+    color:inherit;
+  }
+  &:hover{
+    background: rgba(#fff,.3);
+    color: #409eff;
   }
 }
 

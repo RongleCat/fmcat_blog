@@ -1,7 +1,7 @@
 <template>
   <el-container class="show-container" :style="{backgroundImage:`url('${getMusicBackground}')`}">
     <link rel="stylesheet" href="https://at.alicdn.com/t/font_1089720_kfkzfvuo9rf.css">
-    <audio preload="load" id="player" hidden autoplay playbackRate="1.5"/>
+    <audio preload="load" id="player" hidden autoplay playbackRate="1.5" />
     <el-aside width="240px" class="main-aside" :class="[asideClose?'close':'']">
       <div class="my-info">
         <img src="@/assets/images/head.jpg" alt>
@@ -35,115 +35,116 @@
           <i class="iconfont icon-pause" title="暂停" v-if="playing" @click="playStateCtrl"></i>
           <i class="iconfont icon-play" title="播放" v-else @click="playStateCtrl"></i>
           <i class="iconfont icon-forward" title="下一曲" @click="nextOne"></i>
-          <i
-            class="iconfont icon-volume"
-            title="音量"
-            :class="[muteing?'disabled':'']"
-            @click.self="setMuted"
-          ></i>
+          <i class="iconfont icon-volume" title="音量" :class="[muteing?'disabled':'']"
+            @click.self="setMuted"></i>
         </div>
       </transition>
     </el-aside>
     <el-main>
       <transition name="page">
-        <router-view></router-view>
+        <keep-alive>
+          <router-view v-if="$route.meta.cache"></router-view>
+        </keep-alive>
+      </transition>
+      <transition name="page">
+        <router-view v-if="!$route.meta.cache"></router-view>
       </transition>
     </el-main>
   </el-container>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters } from 'vuex'
 // import dayjs from 'dayjs'
 export default {
   data() {
     return {
       sideOpen: true,
       tooShort: false
-    };
+    }
   },
   created() {
-    let that = this;
-    document.title = "花喵电台";
+    let that = this
+    document.title = '花喵电台'
     window.addEventListener(
-      "resize",
+      'resize',
       function(e) {
         if (e.target.innerHeight <= 650) {
-          that.tooShort = true;
+          that.tooShort = true
         } else {
           if (that.tooShort) {
-            that.tooShort = false;
+            that.tooShort = false
           }
         }
       },
       false
-    );
+    )
   },
   computed: {
     ...mapGetters({
-      getMusicBackground: "getMusicBackground"
+      getMusicBackground: 'getMusicBackground'
     }),
-    ...mapState(["musicList", "playIndex", "playing", "asideClose", "muteing"])
+    ...mapState(['musicList', 'playIndex', 'playing', 'asideClose', 'muteing'])
   },
   watch: {
     playIndex(nv) {
-      window.musicPlayer.currentTime = 0;
-      window.musicPlayer.src = this.musicList[nv].music_url;
-      window.musicPlayer.load();
+      window.musicPlayer.currentTime = 0
+      window.musicPlayer.src = this.musicList[nv].music_url
+      window.musicPlayer.load()
     },
     playing(nv) {
       if (!nv) {
-        window.musicPlayer.pause();
+        window.musicPlayer.pause()
       } else {
-        window.musicPlayer.play();
+        window.musicPlayer.play()
       }
     },
     muteing(nv) {
-      window.musicPlayer.muted = nv;
+      window.musicPlayer.muted = nv
     }
   },
   async mounted() {
-    let that = this;
+    let that = this
     let {
       data: { musicList }
-    } = await that.$axios.get("/home/music");
-    this.$store.commit("setMusicList", musicList);
-    let player = (window.musicPlayer = document.querySelector("#player"));
-    player.currentTime = 0;
-    player.volume = 0.5;
-    player.src = musicList[this.playIndex].music_url;
-    player.load();
+    } = await that.$axios.get('/home/music')
+    this.$store.commit('setMusicList', musicList)
+    let player = (window.musicPlayer = document.querySelector('#player'))
+    player.currentTime = 0
+    player.volume = 0.5
+    player.src = musicList[this.playIndex].music_url
+    player.load()
     player.onended = function(e) {
-      that.$store.commit("setPlayIndex", that.playIndex + 1);
-    };
+      that.$store.commit('setPlayIndex', that.playIndex + 1)
+    }
   },
   methods: {
     setMuted() {
-      this.$store.commit("setMutedState", !this.muteing);
+      this.$store.commit('setMutedState', !this.muteing)
     },
     playStateCtrl() {
-      this.$store.commit("setPlayState", !this.playing);
+      this.$store.commit('setPlayState', !this.playing)
     },
     lastOne() {
-      let index = 0;
+      let index = 0
       if (this.playIndex === 0) {
-        index = this.musicList.length - 1;
+        index = this.musicList.length - 1
       } else {
-        index = this.playIndex - 1;
+        index = this.playIndex - 1
       }
-      this.$store.commit("setPlayIndex", index);
+      this.$store.commit('setPlayIndex', index)
     },
     nextOne() {
-      let index = 0;
+      let index = 0
       if (this.playIndex === this.musicList.length - 1) {
-        index = 0;
+        index = 0
       } else {
-        index = this.playIndex + 1;
+        index = this.playIndex + 1
       }
-      this.$store.commit("setPlayIndex", index);
+      this.$store.commit('setPlayIndex', index)
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -281,7 +282,7 @@ export default {
       position: relative;
 
       &:after {
-        content: "";
+        content: '';
         position: absolute;
         width: 35px;
         height: 3px;

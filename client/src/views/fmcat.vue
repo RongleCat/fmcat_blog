@@ -20,14 +20,9 @@
     </el-header>
     <el-container>
       <el-aside width="200px">
-        <el-menu
-          :default-active="$route.path"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose"
-          :router="true"
-          active-text-color="#409EFF"
-        >
+        <el-menu :default-active="$route.path" class="el-menu-vertical-demo"
+          @open="handleOpen" @close="handleClose" :router="true"
+          active-text-color="#409EFF">
           <el-menu-item index="/fmcat">
             <i class="el-icon-menu"></i>
             <span slot="title">概览</span>
@@ -62,24 +57,24 @@ export default {
   data() {
     return {
       isCollapse: true
-    };
+    }
   },
-  created(){
-    document.title='花喵电台后台管理'
+  created() {
+    document.title = '花喵电台后台管理'
   },
   methods: {
     handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+      console.log(key, keyPath)
     },
     handleClose(key, keyPath) {
-      console.log(key, keyPath);
+      console.log(key, keyPath)
     },
     handleCommand(command) {
-      this.$message("click on item " + command);
-      console.log(command);
+      this.$message('click on item ' + command)
+      console.log(command)
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -142,7 +137,7 @@ body,
 }
 
 .el-dropdown {
-  i[class^="el-icon"] {
+  i[class^='el-icon'] {
     font-size: 20px;
     vertical-align: -2px;
   }

@@ -10,24 +10,23 @@
 </template>
 
 <script>
-  export default {
-    data(){
-      return {
-        html:''
-      }
-    },
-    created(){
-      let that = this
-      this.$axios('/fmcat/blog/detail?id=' + this.$route.params.id).then(r=>{
-        that.html = r.data.editItem.html;
-      })
+export default {
+  data() {
+    return {
+      html: ''
     }
+  },
+  created() {
+    let that = this
+    this.$axios('/fmcat/blog/detail?id=' + this.$route.params.id).then(r => {
+      that.html = r.data.editItem.html
+    })
   }
-
+}
 </script>
 
 <style scoped>
-.top-container{
+.top-container {
   padding-bottom: 20px;
 }
 </style>

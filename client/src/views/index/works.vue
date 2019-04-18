@@ -1,14 +1,14 @@
 <template>
-  <Wait/>
+  <Wait />
 </template>
 
 <script>
-import Wait from "@/components/Wait"
+import Wait from '@/components/Wait'
 export default {
   components: {
     Wait
   }
-};
+}
 </script>
 
 <style scoped>

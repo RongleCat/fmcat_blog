@@ -33,6 +33,7 @@
 *::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: #535353;
+
   &:hover {
     background: #888;
   }
@@ -66,6 +67,7 @@ p code {
 
 .detail-content {
   font-size: 14px;
+
   h2,
   h4,
   h3,
@@ -73,14 +75,17 @@ p code {
   pre {
     margin-bottom: 10px;
   }
+
   a {
     text-decoration: none;
     color: #409EFF;
     transition: color .2s;
+
     &:hover {
       color: rgba(#409EFF, .8);
     }
   }
+
   p {
     line-height: 1.5em;
   }
@@ -88,8 +93,8 @@ p code {
 
 .slide-enter,
 .slide-leave-to {
-  transform: translateY(0);
-  opacity: 1;
+  transform: translateY(50px);
+  opacity: 0;
 }
 
 .slide-leave,
@@ -99,16 +104,17 @@ p code {
 }
 
 .slide-enter-active {
-  animation: slide-in 0.3s ease-out;
+  animation: slide-in .3s ease-out;
 }
 
 .slide-leave-active {
-  animation: slide-out 0.3s ease-out;
-  position: absolute;
+  opacity: 0;
+  // animation: slide-out .3s ease-out;
+  // position: absolute;
 }
 
 .slide-move {
-  transition: all 0.3s;
+  transition: all .3s;
 }
 
 @keyframes slide-in {
@@ -116,6 +122,7 @@ p code {
     transform: translateY(50px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -127,6 +134,7 @@ p code {
     transform: translateY(0);
     opacity: 1;
   }
+
   to {
     transform: translateY(50px);
     opacity: 0;

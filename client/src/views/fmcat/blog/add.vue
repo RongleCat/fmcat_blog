@@ -14,12 +14,8 @@
             <el-popover placement="top" trigger="hover">
               <img v-if="coverUrl" :src="coverUrl" class="cover-img">
               <span class="tip-text" v-else>未添加封面</span>
-              <el-button
-                icon="el-icon-plus"
-                class="btn-addcover"
-                @click="openCoverSelect"
-                slot="reference"
-              >{{coverUrl?'已添加':'添加封面'}}</el-button>
+              <el-button icon="el-icon-plus" class="btn-addcover" @click="openCoverSelect"
+                slot="reference">{{coverUrl?'已添加':'添加封面'}}</el-button>
             </el-popover>
             <input type="file" style="display:none" ref="up_cover" @change="selectDone">
           </div>
@@ -27,37 +23,23 @@
         <el-col :span="4">
           <div class="grid-content bg-purple">
             <el-select v-model="blogClass" placeholder="选择博客类别">
-              <el-option
-                v-for="item in blogClassList"
-                :key="item.id"
-                :label="item.class_name"
-                :value="item.id"
-              ></el-option>
+              <el-option v-for="item in blogClassList" :key="item.id" :label="item.class_name"
+                :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
         <el-col :span="8">
           <div class="grid-content bg-purple">
-            <el-select v-model="tagSeleted" multiple placeholder="请选择文章标签" @change="change">
-              <el-option
-                v-for="item in blogTagList"
-                :key="item.id"
-                :label="item.tag_name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="tagSeleted" multiple placeholder="请选择文章标签"
+              @change="change">
+              <el-option v-for="item in blogTagList" :key="item.id" :label="item.tag_name"
+                :value="item.id"></el-option>
             </el-select>
           </div>
         </el-col>
       </el-row>
-      <mavon-editor
-        codeStyle="atom-one-dark"
-        :toolbars="toolbars"
-        @imgAdd="editorUpload"
-        @save="submit"
-        @change="editContent"
-        ref="md"
-        :boxShadow="false"
-      />
+      <mavon-editor codeStyle="atom-one-dark" :toolbars="toolbars" @imgAdd="editorUpload"
+        @save="submit" @change="editContent" ref="md" :boxShadow="false" />
     </div>
   </div>
 </template>
@@ -66,13 +48,13 @@
 export default {
   data() {
     return {
-      blogTitle: "",
-      blogClass: "",
-      blogMarkdown: "",
-      blogHtml: "",
+      blogTitle: '',
+      blogClass: '',
+      blogMarkdown: '',
+      blogHtml: '',
       saveing: false,
       tagSeleted: [],
-      tagsText: "",
+      tagsText: '',
       coverUrl: null,
       toolbars: {
         bold: true, // 粗体
@@ -111,176 +93,173 @@ export default {
       },
       blogTagList: null,
       blogClassList: null
-    };
+    }
   },
   async mounted() {
-    let that = this;
+    let that = this
     let {
       data: { blogTagList }
-    } = await that.$axios("/fmcat/blog/blogTag");
+    } = await that.$axios('/fmcat/blog/blogTag')
     let {
       data: { blogClassList }
-    } = await that.$axios("/fmcat/blog/blogClass");
+    } = await that.$axios('/fmcat/blog/blogClass')
     // that.blogTagList = blogTagList
     // that.blogClassList = blogClassList
-    Object.assign(that, { blogTagList, blogClassList });
-    console.log(that);
+    Object.assign(that, { blogTagList, blogClassList })
+    console.log(that)
     //绑定全局快捷键保存提交事件
-    window.addEventListener("keydown", function(e) {
-      if (
-        e.keyCode == 83 &&
-        (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)
-      ) {
-        e.preventDefault();
+    window.addEventListener('keydown', function(e) {
+      if (e.keyCode == 83 && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
+        e.preventDefault()
         if (that.saveing) {
-          return false;
+          return false
         } else {
-          that.$refs.md.save();
+          that.$refs.md.save()
         }
       }
-    });
+    })
   },
   methods: {
     change(value) {
-      let res = [];
+      let res = []
       for (let i = 0; i < this.blogTagList.length; i++) {
-        let item = this.blogTagList[i];
+        let item = this.blogTagList[i]
         if (value.indexOf(item.id) != -1) {
-          res.push(item.tag_name);
+          res.push(item.tag_name)
         }
       }
-      this.tagsText = res.join(",");
+      this.tagsText = res.join(',')
     },
     async editorUpload(pos, $file) {
-      let that = this;
-      let $vm = this.$refs.md;
+      let that = this
+      let $vm = this.$refs.md
       let add_loading = that.$loading({
         target: $vm.$el
-      });
+      })
       try {
-        let url = await this.imageUpload($file, "blog_images/");
-        $vm.$img2Url(pos, url);
-        add_loading.close();
+        let url = await this.imageUpload($file, 'blog_images/')
+        $vm.$img2Url(pos, url)
+        add_loading.close()
       } catch (error) {
-        add_loading.close();
-        console.log(error);
+        add_loading.close()
+        console.log(error)
       }
     },
     async imageUpload($file, path) {
-      let that = this;
-      let filename = path + $file.name;
-      let formData = new FormData();
+      let that = this
+      let filename = path + $file.name
+      let formData = new FormData()
       let {
         data: { ossPolicy }
-      } = await that.$axios("/api/getOssToken");
-      formData.append("key", filename);
-      formData.append("name", filename);
-      formData.append("policy", ossPolicy.policy);
-      formData.append("OSSAccessKeyId", ossPolicy.OSSAccessKeyId);
-      formData.append("success_action_status", "200");
-      formData.append("callback", "");
-      formData.append("signature", ossPolicy.signature);
-      formData.append("file", $file);
+      } = await that.$axios('/api/getOssToken')
+      formData.append('key', filename)
+      formData.append('name', filename)
+      formData.append('policy', ossPolicy.policy)
+      formData.append('OSSAccessKeyId', ossPolicy.OSSAccessKeyId)
+      formData.append('success_action_status', '200')
+      formData.append('callback', '')
+      formData.append('signature', ossPolicy.signature)
+      formData.append('file', $file)
       return new Promise((resolve, reject) => {
         this.$axios({
           url: ossPolicy.host,
-          method: "post",
+          method: 'post',
           data: formData,
           headers: {
-            "Content-Type": "multipart/form-data"
+            'Content-Type': 'multipart/form-data'
           }
         })
           .then(r => {
-            resolve(`http://static.fmcat.top/${filename}`);
+            resolve(`http://static.fmcat.top/${filename}`)
           })
           .catch(err => {
             this.$notify.error({
-              title: "错误",
-              message: "文件上传错误，请稍后重试"
-            });
-            reject(err);
-          });
-      });
+              title: '错误',
+              message: '文件上传错误，请稍后重试'
+            })
+            reject(err)
+          })
+      })
     },
     editContent(markdown, html) {
-      this.blogMarkdown = markdown;
-      this.blogHtml = html;
+      this.blogMarkdown = markdown
+      this.blogHtml = html
     },
     submit(markdown, html) {
-      let that = this;
+      let that = this
       let post = {
         markdown: that.blogMarkdown,
         html: that.blogHtml,
         title: that.blogTitle,
         class_id: that.blogClass,
-        tags_id: that.tagSeleted.join(","),
+        tags_id: that.tagSeleted.join(','),
         tags_text: that.tagsText
-      };
+      }
       if (that.coverUrl) {
-        post.cover = that.coverUrl;
+        post.cover = that.coverUrl
       }
       if (!post.title) {
-        that.$message.error("标题必须写，写多少心里没数么");
-        return false;
+        that.$message.error('标题必须写，写多少心里没数么')
+        return false
       }
       if (!post.class_id) {
-        that.$message.error("类别选一下咯");
-        return false;
+        that.$message.error('类别选一下咯')
+        return false
       }
       if (!post.tags_text.length && !post.tags_id.length) {
-        that.$message.error("标签选一下咯");
-        return false;
+        that.$message.error('标签选一下咯')
+        return false
       }
       if (!post.markdown) {
-        that.$message.error("内容还没编辑，发布啥呢");
-        return false;
+        that.$message.error('内容还没编辑，发布啥呢')
+        return false
       }
-      that.saveing = true;
+      that.saveing = true
       that
-        .$confirm("此操作将发布博客, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "info"
+        .$confirm('此操作将发布博客, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
         })
         .then(() => {
-          let add_loading = that.$loading();
+          let add_loading = that.$loading()
           setTimeout(() => {
             that
               .$axios({
-                url: "/fmcat/blog/add",
-                method: "post",
+                url: '/fmcat/blog/add',
+                method: 'post',
                 data: post
               })
               .then(r => {
-                console.log(r);
-                add_loading.close();
-                that.$router.replace("/fmcat/blog");
+                console.log(r)
+                add_loading.close()
+                that.$router.replace('/fmcat/blog')
                 that.$message({
-                  type: "success",
-                  message: "发布成功!"
-                });
-                that.saveing = false;
-              });
-          }, 2000);
+                  type: 'success',
+                  message: '发布成功!'
+                })
+                that.saveing = false
+              })
+          }, 2000)
         })
         .catch(() => {
-          console.log("取消发布");
-          that.saveing = false;
-        });
+          console.log('取消发布')
+          that.saveing = false
+        })
     },
     openCoverSelect() {
-      this.$refs.up_cover.dispatchEvent(new MouseEvent("click"));
+      this.$refs.up_cover.dispatchEvent(new MouseEvent('click'))
     },
     async selectDone(e) {
       let cover_loading = this.$loading({
-        target: ".color-block"
-      });
-      let url = await this.imageUpload(e.target.files[0], "blog_cover/");
-      cover_loading.close();
-      this.coverUrl = url;
+        target: '.color-block'
+      })
+      let url = await this.imageUpload(e.target.files[0], 'blog_cover/')
+      cover_loading.close()
+      this.coverUrl = url
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -304,11 +283,11 @@ export default {
   width: 100%;
   padding: 12px 10px;
 }
-.tip-text{
+.tip-text {
   text-align: center;
   display: block;
 }
-.cover-img{
+.cover-img {
   display: block;
   max-width: 400px;
 }

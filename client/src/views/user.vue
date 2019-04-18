@@ -1,7 +1,5 @@
 <template>
-  <div a="1"
-       b="2"
-       c='2'>用户名称{{username}}</div>
+  <div a="1" b="2" c='2'>用户名称{{username}}</div>
 </template>
 
 <script>
@@ -20,7 +18,6 @@ div {
   div {
     div {
       background: #000;
-      
     }
   }
 }

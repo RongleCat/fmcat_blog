@@ -77,7 +77,10 @@ export default new Router({
     }, {
       path: "blog",
       component: HomeBlog,
-      name: "index-blog"
+      name: "index-blog",
+      meta: {
+        cache: true
+      }
     }, {
       path: "blog/:id",
       component: HomeBlogDetail,

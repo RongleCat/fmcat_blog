@@ -9,21 +9,12 @@
       <i class="iconfont icon-pause" title="暂停" v-if="playing" @click="playStateCtrl"></i>
       <i class="iconfont icon-play" title="播放" v-else @click="playStateCtrl"></i>
       <i class="iconfont icon-forward" title="下一曲" @click="nextOne"></i>
-      <i
-        class="iconfont icon-volume"
-        title="音量"
-        :class="[muteing?'disabled':'']"
-        @click.self="setMuted"
-      ></i>
+      <i class="iconfont icon-volume" title="音量" :class="[muteing?'disabled':'']"
+        @click.self="setMuted"></i>
 
       <div class="volume-container">
-        <el-slider
-          v-model="volumeCtrl"
-          class="volume-bar"
-          :show-tooltip="false"
-          vertical
-          height="100px"
-        ></el-slider>
+        <el-slider v-model="volumeCtrl" class="volume-bar" :show-tooltip="false"
+          vertical height="100px"></el-slider>
         <span>{{volumeCtrl}}</span>
       </div>
     </div>
@@ -31,62 +22,62 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters } from 'vuex'
 export default {
   data() {
     return {
       volumeCtrl: 50
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      musicName: "getMusicName",
-      bgSourceL: "getBackgroundSource"
+      musicName: 'getMusicName',
+      bgSourceL: 'getBackgroundSource'
     }),
-    ...mapState(["musicList", "playIndex", "playing", "muteing"])
+    ...mapState(['musicList', 'playIndex', 'playing', 'muteing'])
   },
   watch: {
     volumeCtrl(newValue) {
-      window.musicPlayer.volume = newValue / 100;
+      window.musicPlayer.volume = newValue / 100
       if (newValue === 0) {
-        this.$store.commit("setMutedState", true);
+        this.$store.commit('setMutedState', true)
       } else {
         if (this.muteing) {
-          this.$store.commit("setMutedState", false);
+          this.$store.commit('setMutedState', false)
         }
       }
     }
   },
   methods: {
     setMuted() {
-      this.$store.commit("setMutedState", !this.muteing);
+      this.$store.commit('setMutedState', !this.muteing)
     },
     playStateCtrl() {
-      this.$store.commit("setPlayState", !this.playing);
+      this.$store.commit('setPlayState', !this.playing)
     },
     lastOne() {
-      let index = 0;
+      let index = 0
       if (this.playIndex === 0) {
-        index = this.musicList.length - 1;
+        index = this.musicList.length - 1
       } else {
-        index = this.playIndex - 1;
+        index = this.playIndex - 1
       }
-      this.$store.commit("setPlayIndex", index);
+      this.$store.commit('setPlayIndex', index)
     },
     nextOne() {
-      let index = 0;
+      let index = 0
       if (this.playIndex === this.musicList.length - 1) {
-        index = 0;
+        index = 0
       } else {
-        index = this.playIndex + 1;
+        index = this.playIndex + 1
       }
-      this.$store.commit("setPlayIndex", index);
+      this.$store.commit('setPlayIndex', index)
     },
     getCurrentIndex() {
-      return this.$store.state.music.playIndex;
+      return this.$store.state.music.playIndex
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -129,7 +120,7 @@ export default {
       position: relative;
 
       &:after {
-        content: "";
+        content: '';
         position: absolute;
         width: 35px;
         height: 3px;
@@ -179,7 +170,7 @@ export default {
 .play-info {
   color: #fff;
   font-size: 12px;
-  font-family: "宋体";
+  font-family: '宋体';
   position: absolute;
   bottom: 20px;
   line-height: 60px;

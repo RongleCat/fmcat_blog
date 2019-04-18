@@ -1,13 +1,8 @@
 <template>
   <div class="bloglist-container" ref="page">
     <div class="class-container">
-      <div
-        class="item"
-        :class="[classIndex===index?'actived':'','item-'+(index+1)]"
-        @click="classSelect(item,index)"
-        v-for="(item,index) in classList"
-        :key="index"
-      >
+      <div class="item" :class="[classIndex===index?'actived':'','item-'+(index+1)]"
+        @click="classSelect(item,index)" v-for="(item,index) in classList" :key="index">
         <label>{{item.class_name}}</label>
         <span>{{item.count}}</span>
       </div>
@@ -15,14 +10,11 @@
     <div class="blog-body">
       <div class="list-container">
         <transition-group name="slide" tag="div" class="blog-list" mode="out-in">
-          <div class="item" v-for="(item,index) in blogList" :key="item.id+''+index+''+index">
+          <div class="item" v-for="item in blogList" :key="item.id">
             <span class="is-top" title="这篇博客已被置顶" v-if="item.is_top"></span>
             <router-link :to="'/blog/'+item.id">
-              <img
-                :src="item.cover+'?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90'"
-                alt
-                v-if="item.cover"
-              >
+              <img :src="item.cover+'?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90'"
+                alt v-if="item.cover">
               <div class="item-info">
                 <h4>{{item.title}}</h4>
                 <div class="value-line">
@@ -39,7 +31,8 @@
           </div>
         </transition-group>
         <div class="loading-bar">
-          <template v-if="is_end">End.</template>
+          <template v-if="!blogCount">暂无博客，@花喵发一篇</template>
+          <template v-else-if="is_end">End.</template>
           <template v-else>
             <i class="el-icon-loading"></i>
             loading next page
@@ -48,26 +41,12 @@
       </div>
       <div class="right-side">
         <div class="query-rules">
-          <el-tag
-            closable
-            v-if="queryClass.length"
-            @close="queryClassRemove"
-          >{{queryClass[0].class_name}}</el-tag>
-          <el-tag
-            closable
-            v-if="queryTag.length"
-            @close="queryTagRemove"
-            type="success"
-          >{{queryTag[0].tag_name}}</el-tag>
+          <el-tag closable v-if="queryClass.length" @close="queryClassRemove">{{queryClass[0].class_name}}</el-tag>
+          <el-tag closable v-if="queryTag.length" @close="queryTagRemove" type="success">{{queryTag[0].tag_name}}</el-tag>
         </div>
         <div class="tag-query" v-if="blogTagList">
-          <el-tag
-            v-for="(item,index) in blogTagList"
-            :key="index"
-            size="small"
-            type="success"
-            @click="tagSelect(item)"
-          >{{item.tag_name}}</el-tag>
+          <el-tag v-for="(item,index) in blogTagList" :key="index" size="small"
+            type="success" @click="tagSelect(item)">{{item.tag_name}}</el-tag>
         </div>
       </div>
     </div>
@@ -87,84 +66,81 @@ export default {
       blogCount: 0,
       queryLock: false,
       queryClass: [],
-      queryTag: [],
-      get_loading: null
-    };
+      queryTag: []
+    }
   },
   async created() {
-    let that = this;
+    let that = this
+    // console.log(that.$route);
     let {
       data: { blogClassList }
-    } = await that.$axios.get("/home/blogClass");
+    } = await that.$axios.get('/home/blogClass')
     let {
       data: { blogTagList }
-    } = await that.$axios.get("/home/blogTag");
-    that.blogClassList = blogClassList;
-    that.blogTagList = blogTagList;
-    that.getTableList(that.currentPage);
+    } = await that.$axios.get('/home/blogTag')
+    that.blogClassList = blogClassList
+    that.blogTagList = blogTagList
+    that.getTableList(that.currentPage)
   },
   computed: {
     classList() {
-      let allCount = 0;
+      let allCount = 0
       if (this.blogClassList) {
         this.blogClassList.forEach(item => {
-          allCount += item.count;
-        });
-        return [
-          { class_name: "全部", count: allCount, id: null },
-          ...this.blogClassList
-        ];
+          allCount += item.count
+        })
+        return [{ class_name: '全部', count: allCount, id: null }, ...this.blogClassList]
       }
     }
   },
   mounted() {
-    let that = this;
-    let $box = that.$refs.page;
-    $box.addEventListener("scroll", function(e) {
-      let { scrollTop, clientHeight, scrollHeight } = e.target;
-      if (
-        scrollTop + clientHeight >= scrollHeight - 100 &&
-        !that.is_end &&
-        !that.queryLock
-      ) {
-        that.currentPage += 1;
+    let that = this
+    let $box = that.$refs.page
+    $box.addEventListener('scroll', function(e) {
+      let { scrollTop, clientHeight, scrollHeight } = e.target
+      if (scrollTop + clientHeight >= scrollHeight - 100 && !that.is_end && !that.queryLock) {
+        that.currentPage += 1
       }
-    });
+    })
+  },
+  activated() {
+    if (window.sessionStorage.getItem('scrollTop')) {
+      this.$refs.page.scrollTop = parseInt(window.sessionStorage.getItem('scrollTop'))
+    }
   },
   watch: {
-    currentPage(nv) {
-      this.getTableList(nv);
+    currentPage(nv, ov) {
+      let that = this
+      if (nv === -1) {
+        that.getTableList(1, true)
+      } else {
+        this.getTableList(nv)
+      }
     }
   },
   methods: {
     classSelect(item, index) {
-      this.classIndex = index;
+      this.classIndex = index
       if (index) {
-        this.queryClass = [item];
+        this.queryClass = [item]
       } else {
-        this.queryClass = [];
+        this.queryClass = []
       }
-      this.currentPage = 1;
+      this.currentPage = -1
     },
-    getTableList(page) {
-      let that = this;
-      let get_loading = null;
-      this.currentPage = page;
-      that.is_end = false;
+    getTableList(page, remove) {
+      let that = this
+      let get_loading = null
+      this.currentPage = page
+      that.is_end = false
       if (that.queryLock) {
-        console.log("请求繁忙");
-        return false;
+        console.log('请求繁忙')
+        return false
       }
-      that.queryLock = true;
+      that.queryLock = true
 
-      let class_id = that.queryClass.length ? that.queryClass[0].id : null;
-      let tag_id = that.queryTag.length ? that.queryTag[0].id : null;
-      if (class_id || tag_id) {
-        get_loading = that.$loading({
-          target: ".bloglist-container"
-        });
-        that.blogList = [];
-      }
+      let class_id = that.queryClass.length ? that.queryClass[0].id : null
+      let tag_id = that.queryTag.length ? that.queryTag[0].id : null
 
       that
         .$axios({
@@ -177,47 +153,66 @@ export default {
           }
         })
         .then(r => {
-          let { data } = r;
-          that.blogCount = data.blogCount;
-          that.blogList = [...that.blogList, ...data.blogList];
-          that.queryLock = false;
-          get_loading && get_loading.close();
-          if (that.blogList.length === that.blogCount) {
-            that.is_end = true;
+          let { data } = r
+          that.blogCount = data.blogCount
+          let sleep = 0
+          if (remove) {
+            that.blogList = []
+            get_loading = that.$loading({
+              target: '.bloglist-container'
+            })
+            sleep = 500
           }
+          setTimeout(() => {
+            that.blogList = [...that.blogList, ...data.blogList]
+            that.queryLock = false
+            get_loading && get_loading.close()
+            if (that.blogList.length === that.blogCount) {
+              that.is_end = true
+            }
 
-          let box = this.$refs.page;
-          // that.$nextTick(() => {
-          //   if (
-          //     box.scrollHeight - 200 <= box.clientHeight &&
-          //     that.blogCount > 12
-          //   ) {
-          //     that.currentPage += 1;
-          //   }
-          // });
-        });
+            let box = this.$refs.page
+            that.$nextTick(() => {
+              if (box.scrollHeight - 200 <= box.clientHeight && that.blogCount > 12) {
+                that.currentPage += 1
+              }
+            })
+          }, sleep)
+        })
     },
     queryClassRemove() {
-      console.log("分类筛选关闭");
-      this.queryClass = [];
-      this.classIndex = 0;
-      this.getTableList(1);
+      console.log('分类筛选关闭')
+      this.queryClass = []
+      this.classIndex = 0
+      this.currentPage = -1
     },
     queryTagRemove() {
-      console.log("标签筛选关闭");
-      this.queryTag = [];
-      this.getTableList(1);
+      console.log('标签筛选关闭')
+      this.queryTag = []
+      this.currentPage = -1
     },
     tagSelect(item) {
-      this.queryTag = [item];
-      this.getTableList(1);
+      this.queryTag = [item]
+      this.currentPage = -1
     },
     addItem() {
-      let arr = this.blogList.slice(0, 12);
-      this.blogList = [...this.blogList, ...arr];
+      let arr = this.blogList.slice(0, 12)
+      this.blogList = [...this.blogList, ...arr]
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.name === 'index-blog-detail') {
+      this.$route.meta.cache = true
+      window.sessionStorage.setItem('scrollTop', this.$refs.page.scrollTop)
+    } else {
+      this.$route.meta.cache = false
+    }
+    next()
+  },
+  deactivated() {
+    window.sessionStorage.setItem('scrollTop', this.$refs.page.scrollTop)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -284,10 +279,7 @@ $colors: (
           &.actived {
             background: map-get($item, color);
             color: #fff;
-            box-shadow: 0
-              0
-              10px
-              rgba($color: map-get($item, color), $alpha: 0.1);
+            box-shadow: 0 0 10px rgba($color: map-get($item, color), $alpha: 0.1);
             span {
               color: rgba($color: #fff, $alpha: 0.2);
             }
@@ -295,10 +287,7 @@ $colors: (
           &:not(.actived):hover {
             background: rgba($color: map-get($item, color), $alpha: 0.5);
             color: rgba($color: #fff, $alpha: 1);
-            box-shadow: 0
-              0
-              10px
-              rgba($color: map-get($item, color), $alpha: 0.1);
+            box-shadow: 0 0 10px rgba($color: map-get($item, color), $alpha: 0.1);
             span {
               color: rgba($color: #fff, $alpha: 0.2);
             }
@@ -370,10 +359,12 @@ $colors: (
           padding: 10px;
           h4 {
             font-weight: normal;
+            font-size: 16px;
+            line-height: 1.2;
           }
           .value-line {
             font-size: 12px;
-            font-family: "宋体";
+            font-family: '宋体';
             color: #ccc;
             display: flex;
             justify-content: space-between;
@@ -384,9 +375,9 @@ $colors: (
           }
         }
       }
-      @for $i from 1 through 10 {
+      @for $i from 1 through 12 {
         &:nth-child(#{$i}n) {
-          animation-delay: $i * 0.02s;
+          animation-delay: $i * 0.04s;
         }
       }
     }

@@ -20,10 +20,7 @@
     </el-row>
     <el-row :gutter="20" class="music-list">
       <el-col :span="6" v-for="item in musicList" :key="item.id">
-        <div
-          class="music-item"
-          :style="{backgroundImage:`url('${item.bg_url}?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90')`}"
-        >
+        <div class="music-item" :style="{backgroundImage:`url('${item.bg_url}?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90')`}">
           <div class="tools-layer">
             <span>
               <i class="iconfont icon-like"></i>
@@ -39,22 +36,11 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-pagination
-        layout="prev, pager, next"
-        :total="musicCount"
-        :page-size="12"
-        :current-page="currentPage"
-        @current-change="pageChange"
-        background
-      ></el-pagination>
+      <el-pagination layout="prev, pager, next" :total="musicCount" :page-size="12"
+        :current-page="currentPage" @current-change="pageChange" background></el-pagination>
     </el-row>
-    <el-dialog
-      title="添加音乐"
-      :visible.sync="addPopup"
-      width="700px"
-      ref="music_popup"
-      @close="btnCancel"
-    >
+    <el-dialog title="添加音乐" :visible.sync="addPopup" width="700px" ref="music_popup"
+      @close="btnCancel">
       <el-form :model="form" v-if="ossPolicy">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -79,13 +65,8 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="上传音乐" label-width="5em">
-              <el-upload
-                class="upload-demo"
-                :action="ossPolicy.host"
-                :http-request="upload"
-                :file-list="musicFileList"
-                :data="{path:'music',suffix:['mp3','wav'],model:'music_url',size:20971520}"
-              >
+              <el-upload class="upload-demo" :action="ossPolicy.host"
+                :http-request="upload" :file-list="musicFileList" :data="{path:'music',suffix:['mp3','wav'],model:'music_url',size:20971520}">
                 <el-button size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">只能上传MP3,WAV文件，且不超过20M</div>
               </el-upload>
@@ -93,13 +74,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="上传图片" label-width="5em">
-              <el-upload
-                class="upload-demo"
-                :action="ossPolicy.host"
-                :http-request="upload"
-                :file-list="bgFileList"
-                :data="{path:'background',suffix:['jpg','jpeg','png'],model:'bg_url',size:5242880}"
-              >
+              <el-upload class="upload-demo" :action="ossPolicy.host"
+                :http-request="upload" :file-list="bgFileList" :data="{path:'background',suffix:['jpg','jpeg','png'],model:'bg_url',size:5242880}">
                 <el-button size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过5M</div>
               </el-upload>
@@ -119,207 +95,205 @@
 </template>
 
 <script>
-let baseForm =
-  '{"title":"","describe":"","bg_url":"","bg_source":"","music_url":"","music_author":""}';
+let baseForm = '{"title":"","describe":"","bg_url":"","bg_source":"","music_url":"","music_author":""}'
 export default {
   data() {
     return {
       addPopup: false,
       form: {
-        title: "",
-        describe: "",
-        bg_url: "",
-        bg_source: "",
-        music_url: "",
-        music_author: ""
+        title: '',
+        describe: '',
+        bg_url: '',
+        bg_source: '',
+        music_url: '',
+        music_author: ''
       },
       currentPage: 1,
       is_edit: null,
-      ossPolicy:null,
-      musicList:[],
-      musicCount:0
-    };
+      ossPolicy: null,
+      musicList: [],
+      musicCount: 0
+    }
   },
-  async mounted(){
-    let { data: {ossPolicy} } = await this.$axios("/api/getOssToken");
-    let { data: {musicList,musicCount} } = await this.$axios("/fmcat/music");
-    Object.assign(this,{ossPolicy,musicList,musicCount})
+  async mounted() {
+    let {
+      data: { ossPolicy }
+    } = await this.$axios('/api/getOssToken')
+    let {
+      data: { musicList, musicCount }
+    } = await this.$axios('/fmcat/music')
+    Object.assign(this, { ossPolicy, musicList, musicCount })
   },
   computed: {
     musicFileList() {
-      let { music_url } = this.form;
+      let { music_url } = this.form
       if (music_url) {
-        let name = music_url.split("/");
-        return [{ name: name[name.length - 1], url: music_url }];
+        let name = music_url.split('/')
+        return [{ name: name[name.length - 1], url: music_url }]
       } else {
-        return [];
+        return []
       }
     },
     bgFileList() {
-      let { bg_url } = this.form;
+      let { bg_url } = this.form
       if (bg_url) {
-        let name = bg_url.split("/");
-        return [{ name: name[name.length - 1], url: bg_url }];
+        let name = bg_url.split('/')
+        return [{ name: name[name.length - 1], url: bg_url }]
       } else {
-        return [];
+        return []
       }
     }
   },
   methods: {
     upload(e) {
-      let { key, suffix: currentSuffix } = this.getFileName(e.file.name);
-      let { suffix, size = 10485760, path, model } = e.data;
+      let { key, suffix: currentSuffix } = this.getFileName(e.file.name)
+      let { suffix, size = 10485760, path, model } = e.data
       if (suffix.indexOf(currentSuffix) == -1) {
         this.$notify.error({
-          title: "错误",
-          message: `本次上传格式只支持 ${suffix.join("，")}，请重新选择文件`
-        });
-        e.onError();
-        return false;
+          title: '错误',
+          message: `本次上传格式只支持 ${suffix.join('，')}，请重新选择文件`
+        })
+        e.onError()
+        return false
       }
       if (e.file.size > size) {
         this.$notify.error({
-          title: "错误",
+          title: '错误',
           message: `本次上传文件大小超过限制，请重新选择文件`
-        });
-        e.onError();
-        return false;
+        })
+        e.onError()
+        return false
       }
-      let file = e.file;
-      let formData = new FormData();
-      formData.append("key", path + "/" + key);
-      formData.append("name", e.filename);
-      formData.append("policy", this.ossPolicy.policy);
-      formData.append("OSSAccessKeyId", this.ossPolicy.OSSAccessKeyId);
-      formData.append("success_action_status", "200");
-      formData.append("callback", "");
-      formData.append("signature", this.ossPolicy.signature);
-      formData.append("file", file);
+      let file = e.file
+      let formData = new FormData()
+      formData.append('key', path + '/' + key)
+      formData.append('name', e.filename)
+      formData.append('policy', this.ossPolicy.policy)
+      formData.append('OSSAccessKeyId', this.ossPolicy.OSSAccessKeyId)
+      formData.append('success_action_status', '200')
+      formData.append('callback', '')
+      formData.append('signature', this.ossPolicy.signature)
+      formData.append('file', file)
       this.$axios({
         url: e.action,
-        method: "post",
+        method: 'post',
         data: formData,
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
         .then(r => {
-          this.form[model] = `http://static.fmcat.top/${path}/${key}`;
-          e.onSuccess("完成");
+          this.form[model] = `http://static.fmcat.top/${path}/${key}`
+          e.onSuccess('完成')
         })
         .catch(err => {
           this.$notify.error({
-            title: "错误",
-            message: "文件上传错误，请稍后重试"
-          });
-          e.onError(err);
-        });
+            title: '错误',
+            message: '文件上传错误，请稍后重试'
+          })
+          e.onError(err)
+        })
     },
     getFileName(url) {
-      let paths = url.split(".");
-      let suffix = paths.length > 1 ? paths[paths.length - 1] : "png";
+      let paths = url.split('.')
+      let suffix = paths.length > 1 ? paths[paths.length - 1] : 'png'
       return {
         // key: `${this.randomRange(36, 36)}.${suffix.toLowerCase()}`,
         key: url,
         suffix: suffix.toLowerCase()
-      };
+      }
     },
     randomRange(min, max, charStr) {
-      let returnStr = "",
-        range;
-      if (typeof max == "string") {
-        charStr = max;
+      let returnStr = '',
+        range
+      if (typeof max == 'string') {
+        charStr = max
       }
-      range =
-        max && typeof max == "number"
-          ? Math.round(Math.random() * (max - min)) + min
-          : min;
-      charStr =
-        charStr ||
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      range = max && typeof max == 'number' ? Math.round(Math.random() * (max - min)) + min : min
+      charStr = charStr || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
       for (let i = 0; i < range; i++) {
-        let index = Math.round(Math.random() * (charStr.length - 1));
-        returnStr += charStr.substring(index, index + 1);
+        let index = Math.round(Math.random() * (charStr.length - 1))
+        returnStr += charStr.substring(index, index + 1)
       }
-      return returnStr;
+      return returnStr
     },
     btnCancel() {
-      this.form = JSON.parse(baseForm);
-      this.addPopup = false;
+      this.form = JSON.parse(baseForm)
+      this.addPopup = false
     },
     btnConfirm() {
-      let that = this;
+      let that = this
       let add_loading = that.$loading({
-        target: that.$refs.music_popup.$el.querySelector(".el-dialog")
-      });
-      let method = "post";
-      let params = "";
+        target: that.$refs.music_popup.$el.querySelector('.el-dialog')
+      })
+      let method = 'post'
+      let params = ''
       if (that.is_edit) {
-        params = `/${that.is_edit}`;
-        method = "put";
+        params = `/${that.is_edit}`
+        method = 'put'
       }
       that
         .$axios({
-          url: "/fmcat/music" + params,
+          url: '/fmcat/music' + params,
           method,
           data: that.form
         })
         .then(r => {
-          let { data } = r;
-          that.addPopup = false;
-          add_loading.close();
-          that.currentPage = 1;
-          that.getPageList(1);
-          that.is_edit = 0;
-          that.ossPolicy = data.ossPolicy;
-        });
+          let { data } = r
+          that.addPopup = false
+          add_loading.close()
+          that.currentPage = 1
+          that.getPageList(1)
+          that.is_edit = 0
+          that.ossPolicy = data.ossPolicy
+        })
     },
     musicDelete(id) {
-      let that = this;
-      this.$confirm("此操作将永久删除该音乐, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      let that = this
+      this.$confirm('此操作将永久删除该音乐, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         that
           .$axios({
-            url: "/fmcat/music",
-            method: "delete",
+            url: '/fmcat/music',
+            method: 'delete',
             data: {
               id
             }
           })
           .then(r => {
             this.$message({
-              type: "success",
-              message: "删除成功!"
-            });
-            that.getPageList(1);
-          });
-      });
+              type: 'success',
+              message: '删除成功!'
+            })
+            that.getPageList(1)
+          })
+      })
     },
     pageChange(page) {
-      this.getPageList(page);
+      this.getPageList(page)
     },
     musicEdit(item) {
-      let that = this;
-      that.form = item;
-      that.is_edit = item.id;
-      that.addPopup = true;
+      let that = this
+      that.form = item
+      that.is_edit = item.id
+      that.addPopup = true
     },
     getPageList(page) {
-      let that = this;
-      this.currentPage = page;
+      let that = this
+      this.currentPage = page
       let get_loading = that.$loading({
-        target: ".music-list"
-      });
+        target: '.music-list'
+      })
       that.$axios({ url: `/fmcat/music?page=${page}&pagesize=12` }).then(r => {
-        let { data } = r;
-        that.musicCount = data.musicCount;
-        that.musicList = data.musicList;
-        get_loading.close();
-      });
+        let { data } = r
+        that.musicCount = data.musicCount
+        that.musicList = data.musicList
+        get_loading.close()
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

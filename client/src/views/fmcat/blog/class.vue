@@ -34,118 +34,118 @@
 export default {
   data() {
     return {
-      blogClassList:null
-    };
+      blogClassList: null
+    }
   },
-  async mounted(){
+  async mounted() {
     let {
       data: { blogClassList }
-    } = await this.$axios("/fmcat/blog/blogClass");
+    } = await this.$axios('/fmcat/blog/blogClass')
     this.blogClassList = blogClassList
   },
   methods: {
     editTag(index, row) {
-      let that = this;
+      let that = this
       that
-        .$prompt("请输入分类", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
+        .$prompt('请输入分类', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           inputValue: row.class_name,
           inputPattern: /^[u4e00-\u9fa5a-zA-Z0-9]{1,12}$/,
-          inputErrorMessage: "分类长度2-12字符"
+          inputErrorMessage: '分类长度2-12字符'
         })
         .then(({ value }) => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogClass?id=" + row.id,
-              method: "put",
+              url: '/fmcat/blog/blogClass?id=' + row.id,
+              method: 'put',
               data: {
                 class_name: value
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消添加");
-        });
+          console.log('取消添加')
+        })
     },
     deleteTag(index, row) {
-      let that = this;
+      let that = this
       that
-        .$confirm("此操作将永久删除该分类，文章关联将失效, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+        .$confirm('此操作将永久删除该分类，文章关联将失效, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
         .then(() => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogClass",
-              method: "delete",
+              url: '/fmcat/blog/blogClass',
+              method: 'delete',
               data: {
                 id: row.id
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消删除");
-        });
+          console.log('取消删除')
+        })
     },
     addTag() {
-      let that = this;
+      let that = this
       that
-        .$prompt("请输入分类", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
+        .$prompt('请输入分类', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
           inputPattern: /^[u4e00-\u9fa5a-zA-Z0-9]{1,12}$/,
-          inputErrorMessage: "分类长度2-12字符"
+          inputErrorMessage: '分类长度2-12字符'
         })
         .then(({ value }) => {
           let add_loading = that.$loading({
-            target: ".tag-container"
-          });
+            target: '.tag-container'
+          })
           that
             .$axios({
-              url: "/fmcat/blog/blogClass",
-              method: "post",
+              url: '/fmcat/blog/blogClass',
+              method: 'post',
               data: {
                 class_name: value
               }
             })
             .then(r => {
-              add_loading.close();
-              that.getTagList();
-            });
+              add_loading.close()
+              that.getTagList()
+            })
         })
         .catch(() => {
-          console.log("取消添加");
-        });
+          console.log('取消添加')
+        })
     },
     getTagList() {
-      let that = this;
+      let that = this
       let add_loading = that.$loading({
-        target: ".tag-container"
-      });
-      that.$axios("/fmcat/blog/blogClass").then(r => {
-        add_loading.close();
-        that.blogClassList = r.data.blogClassList;
-      });
+        target: '.tag-container'
+      })
+      that.$axios('/fmcat/blog/blogClass').then(r => {
+        add_loading.close()
+        that.blogClassList = r.data.blogClassList
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
