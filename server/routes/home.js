@@ -35,12 +35,12 @@ router.get('/blogList', async function(ctx, next) {
   let {
     page = 1, pagesize = 10
   } = query
-  let blogList = await sql('blog_list').select(['id', 'title', 'cover', 'tags_text', 'class_id', 'update_time', 'is_top', 'is_disabled']).limit(pagesize).offset((page - 1) * pagesize).orderBy('id', 'desc').timeout(10000)
+  let blogList = await sql('blog_list').select(['id', 'title', 'cover', 'update_time', 'is_top', 'like', 'hits']).where({ is_disabled: 0 }).limit(pagesize).offset((page - 1) * pagesize).orderBy([{ column: 'is_top', order: 'desc' }, { column: 'update_time', order: 'desc' }]).timeout(10000)
   let [{
     blogCount
-  }] = await sql('blog_list').count('* as blogCount')
+  }] = await sql('blog_list').where({ is_disabled: 0 }).count('* as blogCount')
 
-  // await sleep(2000)
+  await sleep(1000)
   ctx.body = {
     code: 200,
     data: {

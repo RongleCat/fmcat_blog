@@ -1,10 +1,10 @@
 <template>
-  <div class="bloglist-container">
+  <div class="bloglist-container" ref="page">
     <div class="class-container">
       <div
         class="item"
         :class="[classIndex===index?'actived':'','item-'+(index+1)]"
-        @click="classSelect(index)"
+        @click="classSelect(item,index)"
         v-for="(item,index) in classList"
         :key="index"
       >
@@ -13,17 +13,63 @@
       </div>
     </div>
     <div class="blog-body">
-      <div class="blog-list">
-        <div class="item" v-for="(item,index) in blogList" :key="index">
-          <router-link :to="'/blog/'+item.id">
-            <img :src="item.cover" alt="" v-if="item.cover">
-            <div class="item-info">
-              {{item.title}}
-            </div>
-          </router-link>
+      <div class="list-container">
+        <transition-group name="slide" tag="div" class="blog-list" mode="out-in">
+          <div class="item" v-for="(item,index) in blogList" :key="item.id+''+index+''+index">
+            <span class="is-top" title="这篇博客已被置顶" v-if="item.is_top"></span>
+            <router-link :to="'/blog/'+item.id">
+              <img
+                :src="item.cover+'?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90'"
+                alt
+                v-if="item.cover"
+              >
+              <div class="item-info">
+                <h4>{{item.title}}</h4>
+                <div class="value-line">
+                  <span>
+                    {{item.like}}
+                    <span>赞</span>
+                    {{item.hits}}
+                    <span>阅读</span>
+                  </span>
+                  <span>{{item.update_time|dataFormat('YYYY-MM-DD HH:mm')}}</span>
+                </div>
+              </div>
+            </router-link>
+          </div>
+        </transition-group>
+        <div class="loading-bar">
+          <template v-if="is_end">End.</template>
+          <template v-else>
+            <i class="el-icon-loading"></i>
+            loading next page
+          </template>
         </div>
       </div>
-      <div class="right-side">1</div>
+      <div class="right-side">
+        <div class="query-rules">
+          <el-tag
+            closable
+            v-if="queryClass.length"
+            @close="queryClassRemove"
+          >{{queryClass[0].class_name}}</el-tag>
+          <el-tag
+            closable
+            v-if="queryTag.length"
+            @close="queryTagRemove"
+            type="success"
+          >{{queryTag[0].tag_name}}</el-tag>
+        </div>
+        <div class="tag-query" v-if="blogTagList">
+          <el-tag
+            v-for="(item,index) in blogTagList"
+            :key="index"
+            size="small"
+            type="success"
+            @click="tagSelect(item)"
+          >{{item.tag_name}}</el-tag>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,8 +80,15 @@ export default {
     return {
       classIndex: 0,
       blogClassList: null,
+      blogTagList: null,
       blogList: [],
-      currentPage: 1
+      currentPage: 1,
+      is_end: false,
+      blogCount: 0,
+      queryLock: false,
+      queryClass: [],
+      queryTag: [],
+      get_loading: null
     };
   },
   async created() {
@@ -43,7 +96,11 @@ export default {
     let {
       data: { blogClassList }
     } = await that.$axios.get("/home/blogClass");
+    let {
+      data: { blogTagList }
+    } = await that.$axios.get("/home/blogTag");
     that.blogClassList = blogClassList;
+    that.blogTagList = blogTagList;
     that.getTableList(that.currentPage);
   },
   computed: {
@@ -60,26 +117,104 @@ export default {
       }
     }
   },
+  mounted() {
+    let that = this;
+    let $box = that.$refs.page;
+    $box.addEventListener("scroll", function(e) {
+      let { scrollTop, clientHeight, scrollHeight } = e.target;
+      if (
+        scrollTop + clientHeight >= scrollHeight - 100 &&
+        !that.is_end &&
+        !that.queryLock
+      ) {
+        that.currentPage += 1;
+      }
+    });
+  },
+  watch: {
+    currentPage(nv) {
+      this.getTableList(nv);
+    }
+  },
   methods: {
-    classSelect(index) {
+    classSelect(item, index) {
       this.classIndex = index;
+      if (index) {
+        this.queryClass = [item];
+      } else {
+        this.queryClass = [];
+      }
+      this.currentPage = 1;
     },
     getTableList(page) {
       let that = this;
+      let get_loading = null;
       this.currentPage = page;
-      let get_loading = that.$loading({
-        target: ".bloglist-container"
-      });
+      that.is_end = false;
+      if (that.queryLock) {
+        console.log("请求繁忙");
+        return false;
+      }
+      that.queryLock = true;
+
+      let class_id = that.queryClass.length ? that.queryClass[0].id : null;
+      let tag_id = that.queryTag.length ? that.queryTag[0].id : null;
+      if (class_id || tag_id) {
+        get_loading = that.$loading({
+          target: ".bloglist-container"
+        });
+        that.blogList = [];
+      }
+
       that
         .$axios({
-          url: `/home/blogList?page=${page}&pagesize=10`
+          url: `/home/blogList`,
+          params: {
+            page,
+            pagesize: 12,
+            class_id,
+            tag_id
+          }
         })
         .then(r => {
           let { data } = r;
           that.blogCount = data.blogCount;
-          that.blogList = data.blogList;
-          get_loading.close();
+          that.blogList = [...that.blogList, ...data.blogList];
+          that.queryLock = false;
+          get_loading && get_loading.close();
+          if (that.blogList.length === that.blogCount) {
+            that.is_end = true;
+          }
+
+          let box = this.$refs.page;
+          // that.$nextTick(() => {
+          //   if (
+          //     box.scrollHeight - 200 <= box.clientHeight &&
+          //     that.blogCount > 12
+          //   ) {
+          //     that.currentPage += 1;
+          //   }
+          // });
         });
+    },
+    queryClassRemove() {
+      console.log("分类筛选关闭");
+      this.queryClass = [];
+      this.classIndex = 0;
+      this.getTableList(1);
+    },
+    queryTagRemove() {
+      console.log("标签筛选关闭");
+      this.queryTag = [];
+      this.getTableList(1);
+    },
+    tagSelect(item) {
+      this.queryTag = [item];
+      this.getTableList(1);
+    },
+    addItem() {
+      let arr = this.blogList.slice(0, 12);
+      this.blogList = [...this.blogList, ...arr];
     }
   }
 };
@@ -107,9 +242,8 @@ $colors: (
 .bloglist-container {
   background: #fff;
   padding: 20px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  min-height: 100%;
+  overflow-y: auto;
   .class-container {
     width: 100%;
     display: flex;
@@ -175,63 +309,149 @@ $colors: (
   }
 }
 .blog-body {
-  flex: 1;
   display: flex;
+  background: #fff;
+  .list-container {
+    width: 83.34%;
+    .loading-bar {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ccc;
+      flex-direction: column;
+      .el-icon-loading {
+        font-size: 36px;
+        color: #409eff;
+        margin-bottom: 10px;
+      }
+    }
+  }
   .blog-list {
-    flex: 5;
     width: 100%;
     display: flex;
-    flex-wrap:wrap;
-    flex-shrink:0;
+    flex-wrap: wrap;
+    align-content: flex-start;
     .item {
       break-inside: avoid;
       background: #fff;
       margin-bottom: 20px;
       min-height: 150px;
       padding-right: 20px;
+      flex-grow: 0;
+      position: relative;
+      .is-top {
+        display: block;
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        top: 10px;
+        left: 10px;
+        border-radius: 50%;
+        background: #409eff;
+        box-shadow: 0 0 5px rgba(#000, 0.2) inset, 0 0 10px rgba(#fff, 0.3);
+      }
       a {
         display: block;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        img{
+        width: 100%;
+        color: #333;
+        text-decoration: none;
+        img {
           width: 100%;
           display: block;
           height: 200px;
           object-fit: cover;
         }
+        .item-info {
+          padding: 10px;
+          h4 {
+            font-weight: normal;
+          }
+          .value-line {
+            font-size: 12px;
+            font-family: "宋体";
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 10px;
+            span > span {
+              padding-left: 2px;
+            }
+          }
+        }
+      }
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}n) {
+          animation-delay: $i * 0.02s;
+        }
       }
     }
-    
+
     @media screen and (min-width: 2001px) and (max-width: 3000px) {
-      .item{
+      .item {
         width: 25%;
-        &:nth-child(4n){
+        a {
+          img {
+            height: 250px;
+          }
+        }
+        &:nth-child(4n) {
           padding-right: 0;
         }
       }
     }
 
     @media screen and (min-width: 1201px) and (max-width: 2000px) {
-      .item{
-        width: 33%;
-        &:nth-child(3n){
+      .item {
+        width: 33.33%;
+        &:nth-child(3n) {
           padding-right: 0;
         }
       }
     }
 
     @media screen and (min-width: 0px) and (max-width: 1200px) {
-      .item{
+      .item {
         width: 50%;
-        &:nth-child(2n){
+        a {
+          img {
+            height: 250px;
+          }
+        }
+        &:nth-child(2n) {
           padding-right: 0;
         }
       }
     }
   }
   .right-side {
-    flex: 1;
+    width: 16.66%;
+    padding-left: 20px;
+    user-select: none;
+    .query-rules {
+      .el-tag {
+        margin-right: 5px;
+        margin-bottom: 10px;
+      }
+    }
+    .tag-query {
+      .el-tag {
+        margin: 0 5px 5px 0;
+        cursor: pointer;
+        filter: saturate(0%);
+        transition: all 0.1s;
+        &:hover {
+          filter: saturate(100%);
+        }
+        &:active {
+          opacity: 0.6;
+        }
+      }
+    }
   }
 }
 </style>

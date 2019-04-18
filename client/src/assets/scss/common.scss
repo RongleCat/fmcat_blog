@@ -85,3 +85,50 @@ p code {
     line-height: 1.5em;
   }
 }
+
+.slide-enter,
+.slide-leave-to {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slide-leave,
+.slide-enter-to {
+  transform: translateY(50px);
+  opacity: 0;
+}
+
+.slide-enter-active {
+  animation: slide-in 0.3s ease-out;
+}
+
+.slide-leave-active {
+  animation: slide-out 0.3s ease-out;
+  position: absolute;
+}
+
+.slide-move {
+  transition: all 0.3s;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
