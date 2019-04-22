@@ -33,7 +33,6 @@
 *::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: #535353;
-
   &:hover {
     background: #888;
   }
@@ -67,7 +66,6 @@ p code {
 
 .detail-content {
   font-size: 14px;
-
   h2,
   h4,
   h3,
@@ -75,17 +73,14 @@ p code {
   pre {
     margin-bottom: 10px;
   }
-
   a {
     text-decoration: none;
     color: #409EFF;
     transition: color .2s;
-
     &:hover {
       color: rgba(#409EFF, .8);
     }
   }
-
   p {
     line-height: 1.5em;
   }
@@ -122,7 +117,6 @@ p code {
     transform: translateY(50px);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;
@@ -134,9 +128,20 @@ p code {
     transform: translateY(0);
     opacity: 1;
   }
-
   to {
     transform: translateY(50px);
     opacity: 0;
+  }
+}
+
+.error-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .fore {
+    font-size: 188px;
+    opacity: .1;
   }
 }

@@ -1,14 +1,17 @@
 <template>
   <div class="blog-detail">
-    <div class="btn-back" @click="$router.replace('/blog')"><i class="iconfont icon-back"></i></div>
+    <div class="btn-back" @click="$router.replace('/blog')">
+      <i class="iconfont icon-back"></i>
+    </div>
     <div class="block-content" v-highlight>
+      <Page404 v-if="error" :msg="error" path="/blog" pathText="博客列表"></Page404>
       <template v-if="detail">
         <h3 class="title">{{detail.title}}</h3>
         <div class="info">编辑时间：{{detail.update_time|dataFormat}}</div>
         <div v-html="detail.html" class="detail-content"></div>
       </template>
 
-      <div class="float-tools">
+      <div class="float-tools" v-if="!error">
         <transition-group name="page">
           <div class="btn-item btn-top" key="1" v-if="topBtnShow" @click="backTop">
             <i class="iconfont icon-back"></i>
@@ -24,16 +27,23 @@
 
 <script>
 import day from 'dayjs'
+import Page404 from '@/components/404.vue'
 export default {
   data() {
     return {
       detail: null,
-      topBtnShow: false
+      topBtnShow: false,
+      error: null
     }
   },
+  components: { Page404 },
   async created() {
     let { data } = await this.$axios('/home/blogDetail?id=' + this.$route.params.id)
-    this.detail = data
+    if (data.error) {
+      this.error = data.msg
+    } else {
+      this.detail = data
+    }
   },
   mounted() {
     let that = this
@@ -63,6 +73,7 @@ export default {
     width: 900px;
     margin: 0 auto;
     padding: 20px;
+    min-height: 100%;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
@@ -83,7 +94,7 @@ export default {
   }
 }
 
-.btn-back{
+.btn-back {
   position: fixed;
   height: 100%;
   top: 0;
@@ -96,12 +107,12 @@ export default {
   min-width: 100px;
   color: #ccc;
   cursor: pointer;
-  transition: all .2s;
-  i{
-    color:inherit;
+  transition: all 0.2s;
+  i {
+    color: inherit;
   }
-  &:hover{
-    background: rgba(#fff,.3);
+  &:hover {
+    background: rgba(#fff, 0.3);
     color: #409eff;
   }
 }

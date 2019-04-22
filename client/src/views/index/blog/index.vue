@@ -31,7 +31,7 @@
           </div>
         </transition-group>
         <div class="loading-bar">
-          <template v-if="!blogCount">暂无博客，@花喵发一篇</template>
+          <template v-if="listEmpty">暂无博客，@花喵发一篇</template>
           <template v-else-if="is_end">End.</template>
           <template v-else>
             <i class="el-icon-loading"></i>
@@ -66,7 +66,8 @@ export default {
       blogCount: 0,
       queryLock: false,
       queryClass: [],
-      queryTag: []
+      queryTag: [],
+      listEmpty:false
     }
   },
   async created() {
@@ -171,6 +172,9 @@ export default {
               that.is_end = true
             }
 
+            if (!that.blogCount && page === 1) {
+              that.listEmpty = true
+            }
             let box = this.$refs.page
             that.$nextTick(() => {
               if (box.scrollHeight - 200 <= box.clientHeight && that.blogCount > 12) {
