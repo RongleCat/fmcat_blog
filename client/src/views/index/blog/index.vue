@@ -67,7 +67,7 @@ export default {
       queryLock: false,
       queryClass: [],
       queryTag: [],
-      listEmpty:false
+      listEmpty: false
     }
   },
   async created() {
@@ -134,6 +134,7 @@ export default {
       let get_loading = null
       this.currentPage = page
       that.is_end = false
+      that.listEmpty = false
       if (that.queryLock) {
         console.log('请求繁忙')
         return false
@@ -171,8 +172,8 @@ export default {
             if (that.blogList.length === that.blogCount) {
               that.is_end = true
             }
-
-            if (!that.blogCount && page === 1) {
+            // console.log(that.blogCount)
+            if (data.blogCount == 0 && page === 1) {
               that.listEmpty = true
             }
             let box = this.$refs.page
@@ -373,9 +374,6 @@ $colors: (
             display: flex;
             justify-content: space-between;
             padding-top: 10px;
-            span > span {
-              padding-left: 2px;
-            }
           }
         }
       }

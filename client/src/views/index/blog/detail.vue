@@ -16,8 +16,9 @@
           <div class="btn-item btn-top" key="1" v-if="topBtnShow" @click="backTop">
             <i class="iconfont icon-back"></i>
           </div>
-          <div class="btn-item btn-like actived" key="2">
-            <i class="iconfont icon-heart"></i>
+          <div class="btn-item btn-like" key="2" @click="blogLike">
+            <i class="iconfont icon-heart" v-if="!likeing"></i>
+            <i class="el-icon-loading" v-else></i>
           </div>
         </transition-group>
       </div>
@@ -26,14 +27,15 @@
 </template>
 
 <script>
-import day from 'dayjs'
 import Page404 from '@/components/404.vue'
 export default {
   data() {
     return {
       detail: null,
       topBtnShow: false,
-      error: null
+      error: null,
+      likeing:false,
+      hasVideo:false
     }
   },
   components: { Page404 },
@@ -43,6 +45,9 @@ export default {
       this.error = data.msg
     } else {
       this.detail = data
+      if (data.html.indexOf('iframe')!=-1) {
+        this.$store.commit('setPlayState', false)
+      }
     }
   },
   mounted() {
@@ -58,7 +63,28 @@ export default {
   methods: {
     backTop() {
       document.querySelector('.blog-detail').scrollTop = 0
+    },
+    blogLike() {
+      let that = this
+      if (that.likeing) {
+        console.log('点赞繁忙');
+        return false
+      }
+      that.likeing = true
+      that.$axios('/home/blogLike?id=' + that.detail.id).then(r => {
+        that.likeing = false
+        that.$notify({
+          title: '+1',
+          message: '点赞成功',
+          type: 'success',
+          customClass:'like-notice',
+          showClose:false
+        });
+      })
     }
+  },
+  destroyed(){
+    this.$store.commit('setPlayState', true)
   }
 }
 </script>
@@ -68,6 +94,7 @@ export default {
   background: rgba(255, 255, 255, 0.7);
   overflow-y: auto;
   padding: 20px 0;
+  scroll-behavior: smooth;
   .block-content {
     position: relative;
     width: 900px;
@@ -161,4 +188,5 @@ export default {
     }
   }
 }
+
 </style>
