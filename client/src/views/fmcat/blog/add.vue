@@ -39,7 +39,11 @@
         </el-col>
       </el-row>
       <mavon-editor codeStyle="atom-one-dark" :toolbars="toolbars" @imgAdd="editorUpload"
-        @save="submit" @change="editContent" ref="md" :boxShadow="false" />
+        @save="submit" @change="editContent" ref="md" :boxShadow="false">
+        <template v-slot:left-toolbar-after><button type="button" aria-hidden="true"
+            title="插入视频" @click="insertVideo" class="op-icon fa iconfont icon-play"></button>
+        </template>
+      </mavon-editor>
     </div>
   </div>
 </template>
@@ -106,7 +110,6 @@ export default {
     // that.blogTagList = blogTagList
     // that.blogClassList = blogClassList
     Object.assign(that, { blogTagList, blogClassList })
-    console.log(that)
     //绑定全局快捷键保存提交事件
     window.addEventListener('keydown', function(e) {
       if (e.keyCode == 83 && (navigator.platform.match('Mac') ? e.metaKey : e.ctrlKey)) {
@@ -131,6 +134,7 @@ export default {
       this.tagsText = res.join(',')
     },
     async editorUpload(pos, $file) {
+      console.log(pos)
       let that = this
       let $vm = this.$refs.md
       let add_loading = that.$loading({
@@ -257,6 +261,34 @@ export default {
       let url = await this.imageUpload(e.target.files[0], 'blog_cover/')
       cover_loading.close()
       this.coverUrl = url
+    },
+    insertVideo() {
+      let $vm = this.$refs.md
+      let insert_text = {
+        prefix: `<iframe width="860" height="480" frameborder="0" src="`,
+        subfix: '" allowFullScreen="true"></iframe>',
+        str: ''
+      }
+      this.$prompt('请输入视频页面链接', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /\S/,
+        inputErrorMessage: '视频链接不能为空'
+      })
+        .then(({ value }) => {
+          let iframeReg = /<iframe.*?(?:>|\/>)/gi
+          let srcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/i
+          let arr = value.match(iframeReg)
+          let src = arr[0].match(srcReg)
+          insert_text.str = src[1]
+          $vm.insertText($vm.getTextareaDom(), insert_text)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消输入'
+          })
+        })
     }
   }
 }

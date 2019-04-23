@@ -7,6 +7,7 @@ import './plugins/axios'
 import './plugins/vue-mavon-editor'
 import './plugins/highlight'
 import './plugins/filter'
+// import './plugins/socket'
 
 Vue.config.productionTip = false
 

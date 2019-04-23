@@ -20,10 +20,10 @@
           <i class="iconfont icon-lab"></i>
           <span>前端</span>
         </router-link>
-        <router-link class="item" to="/design" title="设计">
+        <!-- <router-link class="item" to="/design" title="设计">
           <i class="iconfont icon-sun"></i>
           <span>设计</span>
-        </router-link>
+        </router-link> -->
         <router-link class="item" to="/chat" title="聊天室">
           <i class="iconfont icon-messages"></i>
           <span>聊天室</span>
