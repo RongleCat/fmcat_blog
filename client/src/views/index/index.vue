@@ -36,6 +36,11 @@ export default {
     }),
     ...mapState(['musicList', 'playIndex', 'playing', 'muteing'])
   },
+  sockets: {
+    connect() {
+      console.log('%c您已进入花喵歌舞厅', 'color:#fff;background:green;padding:4px 8px;border-radius: 4px;')
+    }
+  },
   watch: {
     volumeCtrl(newValue) {
       window.musicPlayer.volume = newValue / 100

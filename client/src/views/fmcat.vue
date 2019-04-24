@@ -41,6 +41,10 @@
             <el-menu-item index="/fmcat/blog/tag">标签管理</el-menu-item>
             <el-menu-item index="/fmcat/blog/class">分类管理</el-menu-item>
           </el-submenu>
+          <el-menu-item index="/fmcat/role">
+            <i class="el-icon-diy iconfont icon-friends"></i>
+            <span slot="title">聊天角色管理</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main>

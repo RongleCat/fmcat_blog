@@ -19,6 +19,9 @@ import FmcatBlogClass from "./views/fmcat/blog/class.vue";
 import FmcatBlogTag from "./views/fmcat/blog/tag.vue";
 import FmcatBlogDetail from "./views/fmcat/blog/detail.vue";
 import FmcatBlogEdit from "./views/fmcat/blog/edit.vue";
+import FmcatRole from "./views/fmcat/role.vue";
+
+
 
 Vue.use(Router)
 
@@ -46,6 +49,10 @@ export default new Router({
       path: "music",
       component: FmcatMusic,
       name: "fmcat-music"
+    }, {
+      path: "role",
+      component: FmcatRole,
+      name: "fmcat-role"
     }, {
       path: "blog/add",
       component: FmcatBlogAdd,

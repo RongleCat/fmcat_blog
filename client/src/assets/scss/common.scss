@@ -83,6 +83,10 @@ p code {
   }
   p {
     line-height: 1.5em;
+    img {
+      max-width: 100%;
+      display: block;
+    }
   }
 }
 
@@ -131,5 +135,12 @@ p code {
   to {
     transform: translateY(50px);
     opacity: 0;
+  }
+}
+
+.name-input {
+  margin-bottom: 10px;
+  input {
+    text-align: center;
   }
 }
