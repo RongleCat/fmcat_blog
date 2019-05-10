@@ -18,6 +18,7 @@ router.get('/getPrintData', async function(ctx, next) {
   console.log(ctx.params);
   console.log(ctx.body);
   console.log(ctx.querys);
+  console.log(ctx);
   ctx.body = {
     data: "OK"
   }
