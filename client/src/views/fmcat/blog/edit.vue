@@ -216,7 +216,7 @@ export default {
           }
         })
           .then(r => {
-            resolve(`http://static.fmcat.top/${filename}`)
+            resolve(`//static.fmcat.top/${filename}`)
           })
           .catch(err => {
             this.$notify.error({

@@ -61,7 +61,7 @@ export default {
       blogClassList: null,
       blogTagList: null,
       blogList: [],
-      currentPage: 1,
+      currentPage: 0,
       is_end: false,
       blogCount: 0,
       queryLock: false,
@@ -81,7 +81,13 @@ export default {
     } = await that.$axios.get('/home/blogTag')
     that.blogClassList = blogClassList
     that.blogTagList = blogTagList
-    that.getTableList(that.currentPage)
+
+    let { type } = that.$route.query
+    if (type) {
+      that.classSelect(that.classList[type], parseInt(type))
+    } else {
+      that.currentPage = 1
+    }
   },
   computed: {
     classList() {
@@ -114,6 +120,8 @@ export default {
       let that = this
       if (nv === -1) {
         that.getTableList(1, true)
+      } else if (nv === 0) {
+        return false
       } else {
         this.getTableList(nv)
       }
