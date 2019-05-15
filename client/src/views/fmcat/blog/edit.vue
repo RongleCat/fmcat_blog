@@ -39,7 +39,7 @@
         </el-col>
       </el-row>
       <mavon-editor :value="blogMarkdown" :toolbars="toolbars" codeStyle="atom-one-dark"
-        @imgAdd="imageUpload" @save="submit" @change="editContent" ref="md"
+        @imgAdd="editorUpload" @save="submit" @change="editContent" ref="md"
         :boxShadow="false">
         <template v-slot:left-toolbar-after><button type="button" aria-hidden="true"
             title="插入视频" @click="insertVideo" class="op-icon fa iconfont icon-play"></button>

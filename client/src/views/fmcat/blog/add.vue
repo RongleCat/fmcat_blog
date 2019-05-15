@@ -134,7 +134,7 @@ export default {
       this.tagsText = res.join(',')
     },
     async editorUpload(pos, $file) {
-      console.log(pos)
+      console.log($file)
       let that = this
       let $vm = this.$refs.md
       let add_loading = that.$loading({

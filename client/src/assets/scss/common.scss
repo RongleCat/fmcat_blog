@@ -29,15 +29,23 @@
 
 
 /*滚动条滑块*/
-
 *::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: #535353;
+
   &:hover {
     background: #888;
   }
 }
 
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #ccc;
+
+  &:hover {
+    background: #bbb;
+  }
+}
 
 /*滚动条轨道*/
 
@@ -51,21 +59,12 @@
   border-radius: 3px;
 }
 
-code {
-  border-radius: 3px;
-  font-size: 12px;
-  font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-}
 
-p code {
-  padding: 0.2em 0.8em;
-  margin: 0;
-  font-size: 85%;
-  background-color: rgba(27, 31, 35, 0.05);
-}
 
 .detail-content {
   font-size: 14px;
+  // line-height: 1.5em;
+
   h2,
   h4,
   h3,
@@ -73,19 +72,58 @@ p code {
   pre {
     margin-bottom: 10px;
   }
+
+  code {
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  }
+
+  p code,
+  li code {
+    // padding: 0.2em 0.8em;
+    // margin: 0;
+    // font-size: 85%;
+    // background-color: rgba(27, 31, 35, 0.1);
+    background-color: #fff5f5;
+    color: #ff502c;
+    font-size: .87em;
+    padding: .065em .4em;
+  }
+
+  blockquote {
+    color: #666;
+    padding: 1px 23px;
+    margin: 22px 0;
+    border-left: 4px solid #cbcbcb;
+    background-color: #f8f8f8;
+
+    p {
+      margin: 10px 0;
+    }
+  }
+
   a {
     text-decoration: none;
     color: #409EFF;
     transition: color .2s;
+
     &:hover {
       color: rgba(#409EFF, .8);
     }
   }
+  pre{
+    line-height: 1.2em;
+  }
+
   p {
     line-height: 1.5em;
+    margin: 20px 0;
     img {
       max-width: 100%;
-      display: block;
+      // display: block;
+      display: inline-block;
+      margin: 0 auto;
     }
   }
 }
@@ -121,6 +159,7 @@ p code {
     transform: translateY(50px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -132,6 +171,7 @@ p code {
     transform: translateY(0);
     opacity: 1;
   }
+
   to {
     transform: translateY(50px);
     opacity: 0;
@@ -140,6 +180,7 @@ p code {
 
 .name-input {
   margin-bottom: 10px;
+
   input {
     text-align: center;
   }

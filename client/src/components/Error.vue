@@ -1,11 +1,11 @@
 <template>
   <div class="error-view">
     <div class="fore">
-      <span :style="{color:getRandomColor()}">4</span>
-      <span :style="{color:getRandomColor()}">0</span>
-      <span :style="{color:getRandomColor()}">4</span>
+      <span :style="{color:getRandomColor()}" v-for="(i,index) in code.toString()" :key="index">{{i}}</span>
     </div>
-    <p>{{msg}}</p>
+    <p>
+      <slot></slot>
+    </p>
     <p>
       返回
       <router-link :to="path" replace>{{pathText}}</router-link>
@@ -15,7 +15,20 @@
 
 <script>
 export default {
-  props: ['msg', 'path', 'pathText'],
+  props: {
+    path: {
+      type: String,
+      required: true
+    },
+    pathText: {
+      type: String,
+      required: true
+    },
+    code: {
+      type: [String, Number],
+      default: '404'
+    }
+  },
   methods: {
     getRandomColor() {
       return '#' + ((Math.random() * 0xffffff) << 0).toString(16)
@@ -40,12 +53,12 @@ export default {
     opacity: 0.2;
     line-height: 1.2;
   }
-  a{
-    color: #409EFF;
+  a {
+    color: #409eff;
     text-decoration: none;
-    transition: color .2s;
-    &:hover{
-      opacity: .8;
+    transition: color 0.2s;
+    &:hover {
+      opacity: 0.8;
     }
   }
 }

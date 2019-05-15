@@ -4,7 +4,7 @@
       <i class="iconfont icon-back"></i>
     </div>
     <div class="block-content" v-highlight>
-      <Page404 v-if="error" :msg="error" path="/blog" pathText="博客列表"></Page404>
+      <PageError v-if="error" path="/blog" pathText="博客列表" code="404">{{error}}</PageError>
       <template v-if="detail">
         <h3 class="title">{{detail.title}}</h3>
         <div class="info">编辑时间：{{detail.update_time|dataFormat}}</div>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import Page404 from '@/components/404.vue'
+import PageError from '@/components/Error.vue'
 export default {
   data() {
     return {
@@ -38,7 +38,7 @@ export default {
       hasVideo:false
     }
   },
-  components: { Page404 },
+  components: { PageError },
   async created() {
     let { data } = await this.$axios('/home/blogDetail?id=' + this.$route.params.id)
     if (data.error) {

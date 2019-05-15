@@ -17,7 +17,7 @@
         </div>
       </el-col>
     </el-row>
-    <div class="color-block vertical">
+    <div class="color-block vertical table-container">
       <!-- <el-table ref="multipleTable" :data="blogList" tooltip-effect="dark"
         style="width: 100%" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55">
@@ -75,4 +75,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.table-container {
+  margin-top: 20px;
+
+  .el-table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.page-box {
+  padding-top: 20px;
+}
+
+.color-block {
+  min-height: auto;
+}
 </style>

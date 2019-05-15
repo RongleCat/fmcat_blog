@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store';
+import day from 'dayjs'
 import HomeContainer from './views/index.vue'
 import HomeIndex from './views/index/index.vue'
 import HomeBlog from './views/index/blog/index.vue'
@@ -21,6 +22,7 @@ import FmcatBlogDetail from "./views/fmcat/blog/detail.vue";
 import FmcatBlogEdit from "./views/fmcat/blog/edit.vue";
 import FmcatRole from "./views/fmcat/role.vue";
 
+import Error from "./views/other/error.vue";
 
 
 Vue.use(Router)
@@ -73,7 +75,14 @@ export default new Router({
       path: "blog/edit/:id?",
       component: FmcatBlogEdit,
       name: "fmcat-blog-edit-id"
-    }]
+    }],
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('fmcat') === day().format('YYYY-MM-DD')) {
+        next()
+      } else {
+        next('/error?code=401')
+      }
+    }
   }, {
     path: "/",
     component: HomeContainer,
@@ -114,5 +123,9 @@ export default new Router({
       }
       next()
     }
+  },
+  {
+    path: "/error",
+    component: Error
   }]
 })
