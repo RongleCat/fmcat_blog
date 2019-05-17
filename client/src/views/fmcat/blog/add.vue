@@ -151,7 +151,7 @@ export default {
     },
     async imageUpload($file, path) {
       let that = this
-      let filename = path + $file.name
+      let filename = path + that.randomRange(36) + /\.[^\.]+/.exec($file.name)[0]
       let formData = new FormData()
       let {
         data: { ossPolicy }
@@ -289,6 +289,20 @@ export default {
             message: '取消输入'
           })
         })
+    },
+    randomRange(min, max, charStr) {
+      let returnStr = '',
+        range
+      if (typeof max == 'string') {
+        charStr = max
+      }
+      range = max && typeof max == 'number' ? Math.round(Math.random() * (max - min)) + min : min
+      charStr = charStr || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      for (let i = 0; i < range; i++) {
+        let index = Math.round(Math.random() * (charStr.length - 1))
+        returnStr += charStr.substring(index, index + 1)
+      }
+      return returnStr
     }
   }
 }

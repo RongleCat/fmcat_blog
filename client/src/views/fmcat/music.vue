@@ -196,8 +196,8 @@ export default {
       let paths = url.split('.')
       let suffix = paths.length > 1 ? paths[paths.length - 1] : 'png'
       return {
-        // key: `${this.randomRange(36, 36)}.${suffix.toLowerCase()}`,
-        key: url,
+        key: `${this.randomRange(36, 36)}.${suffix.toLowerCase()}`,
+        // key: url,
         suffix: suffix.toLowerCase()
       }
     },
