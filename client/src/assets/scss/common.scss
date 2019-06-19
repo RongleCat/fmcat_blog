@@ -29,10 +29,10 @@
 
 
 /*滚动条滑块*/
+
 *::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: #535353;
-
   &:hover {
     background: #888;
   }
@@ -41,11 +41,11 @@
 .el-table__body-wrapper::-webkit-scrollbar-thumb {
   border-radius: 8px;
   background: #ccc;
-
   &:hover {
     background: #bbb;
   }
 }
+
 
 /*滚动条轨道*/
 
@@ -59,12 +59,9 @@
   border-radius: 3px;
 }
 
-
-
 .detail-content {
   font-size: 14px;
   // line-height: 1.5em;
-
   h2,
   h4,
   h3,
@@ -72,13 +69,11 @@
   pre {
     margin-bottom: 10px;
   }
-
   code {
     border-radius: 3px;
     font-size: 12px;
     font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   }
-
   p code,
   li code {
     // padding: 0.2em 0.8em;
@@ -90,32 +85,27 @@
     font-size: .87em;
     padding: .065em .4em;
   }
-
   blockquote {
     color: #666;
     padding: 1px 23px;
     margin: 22px 0;
     border-left: 4px solid #cbcbcb;
     background-color: #f8f8f8;
-
     p {
       margin: 10px 0;
     }
   }
-
   a {
     text-decoration: none;
     color: #409EFF;
     transition: color .2s;
-
     &:hover {
       color: rgba(#409EFF, .8);
     }
   }
-  pre{
+  pre {
     line-height: 1.2em;
   }
-
   p {
     line-height: 1.5em;
     margin: 20px 0;
@@ -159,7 +149,6 @@
     transform: translateY(50px);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;
@@ -171,7 +160,6 @@
     transform: translateY(0);
     opacity: 1;
   }
-
   to {
     transform: translateY(50px);
     opacity: 0;
@@ -180,8 +168,30 @@
 
 .name-input {
   margin-bottom: 10px;
-
   input {
     text-align: center;
+  }
+}
+
+//聊天任务选择列表swiper
+.roleList .swiper-wrapper {
+  display: flex;
+  align-items: flex-end;
+}
+
+//聊天输入框
+.chat-input {
+  display: flex;
+  width: 100%;
+  .el-input {
+    flex: 1;
+    input {
+      border-radius: 4px 0 0 4px;
+      border-right: 0;
+    }
+  }
+  .el-button {
+    flex-shrink: 0;
+    border-radius: 0 4px 4px 0;
   }
 }

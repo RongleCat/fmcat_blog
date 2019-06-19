@@ -16,10 +16,10 @@
           <i class="iconfont icon-document"></i>
           <span>博客</span>
         </router-link>
-        <router-link class="item" to="/works" title="前端">
+        <!-- <router-link class="item" to="/works" title="前端">
           <i class="iconfont icon-lab"></i>
           <span>前端</span>
-        </router-link>
+        </router-link> -->
         <!-- <router-link class="item" to="/design" title="设计">
           <i class="iconfont icon-sun"></i>
           <span>设计</span>

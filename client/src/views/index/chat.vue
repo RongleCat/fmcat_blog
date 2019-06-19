@@ -1,25 +1,53 @@
 <template>
   <div class="chat-container">
     <div class="chat-main">
-      <canvas id="stage"></canvas>
+      <canvas id="stage" @click="changeFocus('focus')"></canvas>
       <div class="join-chat">
-        <div class="left">
-          <el-input v-model="joinName" placeholder="输入昵称" class="name-input"></el-input>
-          <el-button type="success">加入聊天</el-button>
-        </div>
-        <div class="right"></div>
+        <template v-if="!is_join">
+          <div class="left">
+            <div class="el-input name-input">
+              <input placeholder="输入昵称" v-model="joinName" type="text" class="el-input__inner"
+                @keypress.enter="joinChat">
+            </div>
+            <el-button type="success" @click="joinChat">加入聊天</el-button>
+          </div>
+          <div class="right roleList">
+            <swiper v-if="coverList" :options="swiperOption" ref="mySwiper">
+              <swiper-slide v-for="(item,index) in coverList" :key="index"
+                class="swiper-item" :class="[roleSelectIndex==index?'active':'']">
+                <img :src="`https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/chat/role_cover/${item}.png`"
+                  draggable="false">
+              </swiper-slide>
+            </swiper>
+          </div>
+        </template>
+        <template v-else>
+          <div class="chat-input">
+            <div class="el-input">
+              <input placeholder="请输入内容" v-model="chatContent" type="text"
+                class="el-input__inner" @keypress.enter="emitChat" id="chat">
+            </div>
+            <el-button type="primary" :disabled="!chatContent.length" @click="emitChat">发送</el-button>
+          </div>
+        </template>
       </div>
+      <div class="tip">操作说明：<span>←</span><span>→</span>控制移动<span class="down">↓</span>趴下<span>Space</span>跳跃，<span>Enter</span>开始聊天，焦点丢失点击画面重新获取焦点</div>
+      <input type="text" id="focus" class="input-focus" @keypress.enter="changeFocus('chat')">
     </div>
   </div>
 </template>
 
 <script>
 import Wait from '../../components/Wait'
+import 'swiper/dist/css/swiper.css'
+import { swiper, swiperSlide } from 'vue-awesome-swiper'
+
 let W = 800,
   H = 600
 let roles = {}
 let images = {}
 let myName = ''
+let myRole = null
 let isWalk = false
 let timers = {}
 let roleImages = []
@@ -28,23 +56,51 @@ export default {
   data() {
     return {
       context: null,
-      joinName: ''
+      joinName: '',
+      coverList: null,
+      roleSelectIndex: 0,
+      is_join: false,
+      chatContent: '',
+      swiperOption: {
+        slidesPerView: 8,
+        spaceBetween: 10,
+        centeredSlides: true,
+        slideToClickedSlide: true,
+        on: {
+          slideChangeTransitionStart: () => {
+            if (this.swiper) {
+              this.roleSelectIndex = this.swiper.realIndex
+            }
+          }
+        }
+      }
     }
   },
   components: {
-    Wait
+    Wait,
+    swiper,
+    swiperSlide
   },
   created() {
-    console.log(this.$socket)
     if (this.$socket.connected) {
-      console.log(this.$socket.id)
       console.log('%c已连接到花喵聊天室', 'color:#fff;background:#46bd87;padding:4px 8px;border-radius: 4px;')
       this.$socket.emit('reGetUser')
+    }
+    const s = document.createElement('script')
+    s.type = 'text/javascript'
+    s.src = 'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/js/keyboard.min.js'
+    document.body.appendChild(s)
+  },
+  mounted() {
+    this.swiper()
+  },
+  computed: {
+    swiper() {
+      return this.$refs.mySwiper.swiper
     }
   },
   sockets: {
     connect() {
-      console.log(this.$socket.id)
       console.log('%c已连接到花喵聊天室', 'color:#fff;background:#46bd87;padding:4px 8px;border-radius: 4px;')
     },
     customEmit(val) {
@@ -55,7 +111,6 @@ export default {
     },
     getUsers(data) {
       roles = data.users
-      console.log(data)
       // chatStorage = data.chatStorage
       // for (var i = 0; i < chatStorage.length; i++) {
       //   $('.chat-list').append('<li>' + chatStorage[i] + '</li>')
@@ -78,23 +133,24 @@ export default {
     },
     addUser(r) {
       if (r.code === 0) {
-        alert(r.msg)
+        this.$message.error(r.msg)
       } else {
         roles[r.data.name] = r.data
       }
     },
     userJoin(r) {
       if (r.code === 0) {
-        console.log(r.msg)
+        this.$message.error(r.msg)
       } else {
         myName = r.data.name
         myRole = r.data
+        this.is_join = true
         roles[r.data.name] = r.data
         this.roleKeyBind(myName, this.$socket)
-        $('.join-box')
-          .add('.mask-layer')
-          .remove()
-        $('#jiaodian').focus()
+        // $('.join-box')
+        //   .add('.mask-layer')
+        //   .remove()
+        // $('#jiaodian').focus()
       }
     },
     userChat(r) {
@@ -126,9 +182,11 @@ export default {
     let context = (that.context = document.querySelector('#stage').getContext('2d'))
     context.canvas.width = W
     context.canvas.height = H
-    console.log(context)
+    let canvasLoading = that.$loading({
+      target: '.chat-main',
+      text: '正在加载聊天室资源...'
+    })
     that.$axios('https://chat.fmcat.top/getResources').then(r => {
-      console.log(r)
       var imgs = r.data.imgs
       var promises = []
       if (r.status === 200) {
@@ -138,6 +196,8 @@ export default {
       }
       Promise.all(promises).then(function(results) {
         console.log('资源加载完成')
+        canvasLoading.close()
+        that.coverList = roleImages
         that.drawStage(context, images.bg)
         that.drawRole(context)
         // 初始化所有人物动作
@@ -151,7 +211,7 @@ export default {
           that.drawStage(context, images.bg)
           that.drawRole(context)
           if (myName) {
-            socket.emit('positionSync', {
+            that.$socket.emit('positionSync', {
               position_x: roles[myName].state.x,
               actionUser: myName
             })
@@ -159,10 +219,11 @@ export default {
         }, 1000 / 24)
       })
     })
-
-    console.log(images)
   },
   methods: {
+    changeFocus(focusName){
+      document.querySelector('#'+focusName).focus()
+    },
     loadImages(filename) {
       var bgImage = new Image()
       bgImage.src = 'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/chat/' + filename + '.png'
@@ -178,22 +239,46 @@ export default {
       })
       return p
     },
-    emitChat(myName, content, socket) {
+    joinChat() {
+      let { roleSelectIndex, coverList, joinName: userName } = this
+      if (!userName.length || userName.length > 6) {
+        this.$message.error('用户名为1-6位字符长度')
+        return false
+      }
+      let roleImagesName = coverList[roleSelectIndex]
+      this.$confirm(`确认以"${userName}"昵称加入聊天室？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        lockScroll: false,
+        type: 'warning'
+      }).then(() => {
+        this.$socket.emit('userJoin', {
+          userName,
+          roleImagesName
+        })
+      })
+    },
+    emitChat() {
+      let that = this
+      let { chatContent } = that
+      if (!chatContent.length) {
+        return false
+      }
       window.clearTimeout(timers[myName + 'chat'])
-      roles[myName].chatText = content
-      socket.emit('userChat', {
+      roles[myName].chatText = chatContent
+      that.$socket.emit('userChat', {
         userName: myName,
-        chatText: content
+        chatText: chatContent
       })
       timers[myName + 'chat'] = setTimeout(function() {
         roles[myName].chatText = ''
-        socket.emit('userChat', {
+        that.$socket.emit('userChat', {
           userName: myName,
           chatText: ''
         })
       }, 5000)
-      $('#jiaodian').focus()
-      $('#chat').val('')
+      that.chatContent = ''
+      that.changeFocus('focus')
     },
     drawStage(ctx, imageUrl) {
       ctx.rect(0, 0, W, H)
@@ -347,7 +432,6 @@ export default {
         speed = 0,
         index = 1
       if (state == 0) {
-        console.log('站')
         speed = 500
         roles[roleanme].state.imageIndex = 0
         fun = function() {
@@ -357,14 +441,12 @@ export default {
           roles[roleanme].state.imageIndex = rule[index++]
         }
       } else if (state == 1) {
-        console.log('趴')
         speed = 0
         fun = function() {
           index = 0
           roles[roleanme].state.imageIndex = 8
         }
       } else if (state == 2) {
-        console.log('走')
         speed = 150
         rule = [3, 4, 5, 6]
         roles[roleanme].state.imageIndex = 1
@@ -375,7 +457,6 @@ export default {
           roles[roleanme].state.imageIndex = rule[index++]
         }
       } else if (state == 3) {
-        console.log('跳')
         speed = 0
         fun = function() {
           index = 0
@@ -446,7 +527,10 @@ export default {
     },
     roleKeyBind(myName, socket) {
       let that = this
-      keyboardJS.watch($('#jiaodian')[0])
+      let $focus = document.querySelector('#focus')
+      keyboardJS.watch($focus)
+      $focus.focus()
+
       //跳跃
       keyboardJS.bind('space', function(e) {
         that.jumpCtrl(myName)
@@ -510,7 +594,7 @@ export default {
         'down',
         function(e) {
           if (!e.repeat) {
-            changeRoleState(myName, 1)
+            that.changeRoleState(myName, 1)
             socket.emit('actionCtrl', {
               actionName: 'down',
               actionValue: 'down',
@@ -519,7 +603,7 @@ export default {
           }
         },
         function() {
-          this.changeRoleState(myName, 0)
+          that.changeRoleState(myName, 0)
           socket.emit('actionCtrl', {
             actionName: 'down',
             actionValue: 'up',
@@ -659,7 +743,7 @@ export default {
               actionValue: 'stop',
               actionUser: myName
             })
-            this.changeRoleState(myName, 1)
+            that.changeRoleState(myName, 1)
             socket.emit('actionCtrl', {
               actionName: 'down',
               actionValue: 'down',
@@ -668,7 +752,7 @@ export default {
           }
         },
         function() {
-          this.changeRoleState(myName, 0)
+          that.changeRoleState(myName, 0)
           socket.emit('actionCtrl', {
             actionName: 'down',
             actionValue: 'up',
@@ -687,7 +771,7 @@ export default {
               actionValue: 'stop',
               actionUser: myName
             })
-            this.changeRoleState(myName, 1)
+            that.changeRoleState(myName, 1)
             socket.emit('actionCtrl', {
               actionName: 'down',
               actionValue: 'down',
@@ -696,7 +780,7 @@ export default {
           }
         },
         function() {
-          this.changeRoleState(myName, 0)
+          that.changeRoleState(myName, 0)
           socket.emit('actionCtrl', {
             actionName: 'down',
             actionValue: 'up',
@@ -798,6 +882,7 @@ export default {
 .chat-container {
   background: rgba(#fff, 0.8);
   padding: 20px;
+  overflow-y: auto;
   .chat-main {
     padding: 20px;
     min-height: 100%;
@@ -806,6 +891,27 @@ export default {
     width: 840px;
     margin: 0 auto;
     border-radius: 8px;
+    .tip{
+      font-size: 14px;
+      padding: 10px 0;
+      span{
+        display: inline-block;
+        border: 1px solid #e5e5e5;
+        font-size: 10px;
+        color:#999;
+        padding: 4px;
+        line-height: 1;
+        border-radius: 5px;
+        margin: 0 5px;
+        box-shadow: 0 0 5px rgba(#ccc,.5);
+        &.down{
+          padding: 4px 7px;
+        }
+        &:first-child{
+          margin-right: 0;
+        }
+      }
+    }
   }
   #stage {
     width: 800px;
@@ -818,6 +924,7 @@ export default {
   .join-chat {
     padding-top: 15px;
     display: flex;
+    align-items: center;
     .left {
       flex: 1;
       margin-right: 15px;
@@ -832,7 +939,35 @@ export default {
     }
     .right {
       flex: 5.5;
+      flex-shrink: 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      .item {
+        display: inline-block;
+        img {
+          user-select: none;
+        }
+      }
     }
   }
+}
+.swiper-item {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px;
+  height: 100px;
+  border-radius: 15px;
+  border: 1px solid #e5e5e5;
+  &:hover,
+  &.active {
+    border-color: #67c23a;
+  }
+}
+.input-focus{
+  // opacity: 0;
+  position: relative;
+  z-index: -1;
+  height: 0;
 }
 </style>
