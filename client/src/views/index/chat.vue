@@ -221,8 +221,8 @@ export default {
     })
   },
   methods: {
-    changeFocus(focusName){
-      document.querySelector('#'+focusName).focus()
+    changeFocus(focusName) {
+      document.querySelector('#' + focusName).focus()
     },
     loadImages(filename) {
       var bgImage = new Image()
@@ -431,6 +431,9 @@ export default {
         fun,
         speed = 0,
         index = 1
+      if (!roles[roleanme]) {
+        return
+      }
       if (state == 0) {
         speed = 500
         roles[roleanme].state.imageIndex = 0
@@ -891,23 +894,23 @@ export default {
     width: 840px;
     margin: 0 auto;
     border-radius: 8px;
-    .tip{
+    .tip {
       font-size: 14px;
       padding: 10px 0;
-      span{
+      span {
         display: inline-block;
         border: 1px solid #e5e5e5;
         font-size: 10px;
-        color:#999;
+        color: #999;
         padding: 4px;
         line-height: 1;
         border-radius: 5px;
         margin: 0 5px;
-        box-shadow: 0 0 5px rgba(#ccc,.5);
-        &.down{
+        box-shadow: 0 0 5px rgba(#ccc, 0.5);
+        &.down {
           padding: 4px 7px;
         }
-        &:first-child{
+        &:first-child {
           margin-right: 0;
         }
       }
@@ -964,7 +967,7 @@ export default {
     border-color: #67c23a;
   }
 }
-.input-focus{
+.input-focus {
   // opacity: 0;
   position: relative;
   z-index: -1;

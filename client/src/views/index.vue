@@ -1,6 +1,6 @@
 <template>
-  <el-container class="show-container" :style="{backgroundImage:`url('${getMusicBackground}')`}">
-    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1089720_kfkzfvuo9rf.css">
+  <el-container class="show-container" :style="{backgroundImage:`url('${getMusicBackground}?x-oss-process=image/interlace,1/quality,q_90')`}">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1089720_61nu5re0nqu.css">
     <audio preload="load" id="player" hidden autoplay playbackRate="1.5" />
     <el-aside width="240px" class="main-aside" :class="[asideClose?'close':'']">
       <div class="my-info">
@@ -29,6 +29,32 @@
           <span>聊天室</span>
         </router-link>
       </nav>
+      <div class="bottom-info" v-if="!asideClose">
+        <div class="runing-time">
+          <div class="cat-paw">
+            <div class="outer-ring">
+              <div class="item-1"></div>
+              <div class="item-2"></div>
+              <div class="item-3"></div>
+              <div class="item-4"></div>
+              <div class="item-5"></div>
+              <div class="item-6"></div>
+              <div class="item-7"></div>
+              <div class="item-8"></div>
+              <div class="item-9"></div>
+              <div class="item-10"></div>
+              <div class="item-11"></div>
+              <div class="item-12"></div>
+            </div>
+            <div class="iconfont icon-cat-paw"></div>
+          </div>
+          <div class="time-text">已运行39天18小时56秒</div>
+        </div>
+        <a class="github-link" href="https://github.com/RongleCat" target="_blank"
+          title="ronglecat的github主页">
+          <span class="iconfont icon-git"></span>ronglecat@163.com
+        </a>
+      </div>
       <transition name="page">
         <div class="ctrl-list" v-if="asideClose && !tooShort">
           <i class="iconfont icon-backward" title="上一曲" @click="lastOne"></i>
@@ -115,7 +141,12 @@ export default {
     player.src = musicList[this.playIndex].music_url
     player.load()
     player.onended = function(e) {
-      that.$store.commit('setPlayIndex', that.playIndex + 1)
+      let listLenght = musicList.length
+      if (that.playIndex === listLenght - 1) {
+        that.$store.commit('setPlayIndex', 0)
+      } else {
+        that.$store.commit('setPlayIndex', that.playIndex + 1)
+      }
     }
   },
   methods: {
@@ -165,6 +196,7 @@ export default {
     color: #fff;
     padding-top: 100px;
     transition: all 0.2s;
+    position: relative;
 
     &.close {
       width: 60px !important;
@@ -305,6 +337,92 @@ export default {
     &.icon-forward {
       transform: rotate(90deg);
     }
+  }
+}
+
+.bottom-info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  .github-link {
+    text-align: center;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(#fff, 0.7);
+    transition: color 0.2s;
+    text-decoration: none;
+    padding-bottom: 40px;
+    span.iconfont {
+      padding-right: 5px;
+    }
+    &:hover {
+      color: #fff;
+    }
+  }
+  .runing-time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    padding-bottom: 20px;
+    .cat-paw {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 20px;
+      position: relative;
+      .iconfont {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .outer-ring {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        animation: rotate 10s infinite linear;
+        [class^='item'] {
+          width: 100%;
+          height: 4px;
+          position: absolute;
+          top: 28px;
+          left: 0;
+          &:after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            border-radius: 50%;
+            // animation: rotate .1s infinite linear;
+          }
+        }
+        @for $i from 0 through 11 {
+          .item-#{$i + 1} {
+            transform: rotate(30deg * $i);
+          }
+        }
+      }
+    }
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360);
   }
 }
 </style>
