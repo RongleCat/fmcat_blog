@@ -48,7 +48,7 @@
             </div>
             <div class="iconfont icon-cat-paw"></div>
           </div>
-          <div class="time-text">已运行39天18小时56秒</div>
+          <div class="time-text">{{runingTime}}</div>
         </div>
         <a class="github-link" href="https://github.com/RongleCat" target="_blank"
           title="ronglecat的github主页">
@@ -81,12 +81,14 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
+import day from "dayjs";
 // import dayjs from 'dayjs'
 export default {
   data() {
     return {
       sideOpen: true,
-      tooShort: false
+      tooShort: false,
+      nowTime:new Date()
     }
   },
   created() {
@@ -110,7 +112,16 @@ export default {
     ...mapGetters({
       getMusicBackground: 'getMusicBackground'
     }),
-    ...mapState(['musicList', 'playIndex', 'playing', 'asideClose', 'muteing'])
+    ...mapState(['musicList', 'playIndex', 'playing', 'asideClose', 'muteing']),
+    runingTime(v){
+      let time = day(this.nowTime).diff(day('2019-04-20'),'seconds')
+      let DD = parseInt(time/86400)
+      let hh = parseInt(time%86400/3600)
+      let mm = parseInt(time%3600/60)
+      let ss = parseInt(time%60)
+
+      return `${DD}D ${hh}h ${mm}m ${ss}s`
+    }
   },
   watch: {
     playIndex(nv) {
@@ -148,6 +159,9 @@ export default {
         that.$store.commit('setPlayIndex', that.playIndex + 1)
       }
     }
+    setInterval(() => {
+      that.nowTime = new Date()
+    }, 1000);
   },
   methods: {
     setMuted() {
@@ -369,9 +383,9 @@ export default {
     font-size: 12px;
     padding-bottom: 20px;
     .cat-paw {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 20px;
+      width: 50px;
+      height: 50px;
+      margin-bottom: 10px;
       position: relative;
       .iconfont {
         width: 100%;
@@ -393,7 +407,7 @@ export default {
           width: 100%;
           height: 4px;
           position: absolute;
-          top: 28px;
+          top: 24px;
           left: 0;
           &:after {
             content: '';
