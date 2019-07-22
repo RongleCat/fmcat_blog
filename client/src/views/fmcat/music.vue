@@ -66,7 +66,7 @@
           <el-col :span="12">
             <el-form-item label="上传音乐" label-width="5em">
               <el-upload class="upload-demo" :action="ossPolicy.host"
-                :http-request="upload" :file-list="musicFileList" :data="{path:'music',suffix:['mp3','wav'],model:'music_url',size:20971520}">
+                :http-request="upload" :file-list="musicFileList" :data="{path:'upload_music',suffix:['mp3','wav'],model:'music_url',size:20971520}">
                 <el-button size="small" type="primary">点击上传</el-button>
                 <div slot="tip" class="el-upload__tip">只能上传MP3,WAV文件，且不超过20M</div>
               </el-upload>
