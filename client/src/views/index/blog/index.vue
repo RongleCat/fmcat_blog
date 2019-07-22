@@ -385,11 +385,11 @@ $colors: (
           }
         }
       }
-      @for $i from 1 through 12 {
-        &:nth-child(#{$i}n) {
-          animation-delay: $i * 0.04s;
-        }
-      }
+      // @for $i from 1 through 12 {
+      //   &:nth-child(#{$i}n) {
+      //     animation-delay: $i * 0.04s;
+      //   }
+      // }
     }
 
     @media screen and (min-width: 2001px) and (max-width: 3000px) {
