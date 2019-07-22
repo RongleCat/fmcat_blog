@@ -1,19 +1,23 @@
 <template>
   <div class="bloglist-container" ref="page">
     <div class="class-container">
-      <div class="item" :class="[classIndex===index?'actived':'','item-'+(index+1)]"
-        @click="classSelect(item,index)" v-for="(item,index) in classList" :key="index">
+      <div class="item"
+        :class="[classIndex===index?'actived':'','item-'+(index+1)]"
+        @click="classSelect(item,index)" v-for="(item,index) in classList"
+        :key="index">
         <label>{{item.class_name}}</label>
         <span>{{item.count}}</span>
       </div>
     </div>
     <div class="blog-body">
       <div class="list-container">
-        <transition-group name="slide" tag="div" class="blog-list" mode="out-in">
-          <div class="item" v-for="item in blogList" :key="item.id">
+        <!-- <transition-group name="slide" tag="div" class="blog-list" mode="out-in"> -->
+        <div class="blog-list">
+          <div class="item" v-for="item in blogList" :key="item.id" :class="[keepalive?'':'animation']">
             <span class="is-top" title="这篇博客已被置顶" v-if="item.is_top"></span>
             <router-link :to="'/blog/'+item.id">
-              <img :src="item.cover+'?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90'"
+              <img
+                :src="item.cover+'?x-oss-process=image/auto-orient,1/interlace,1/resize,m_fill,w_600,h_400/quality,q_90'"
                 alt v-if="item.cover">
               <div class="item-info">
                 <h4>{{item.title}}</h4>
@@ -29,7 +33,8 @@
               </div>
             </router-link>
           </div>
-        </transition-group>
+        </div>
+        <!-- </transition-group> -->
         <div class="loading-bar">
           <template v-if="listEmpty">暂无博客，@花喵发一篇</template>
           <template v-else-if="is_end">End.</template>
@@ -41,8 +46,10 @@
       </div>
       <div class="right-side">
         <div class="query-rules">
-          <el-tag closable v-if="queryClass.length" @close="queryClassRemove">{{queryClass[0].class_name}}</el-tag>
-          <el-tag closable v-if="queryTag.length" @close="queryTagRemove" type="success">{{queryTag[0].tag_name}}</el-tag>
+          <el-tag closable v-if="queryClass.length" @close="queryClassRemove">
+            {{queryClass[0].class_name}}</el-tag>
+          <el-tag closable v-if="queryTag.length" @close="queryTagRemove"
+            type="success">{{queryTag[0].tag_name}}</el-tag>
         </div>
         <div class="tag-query" v-if="blogTagList">
           <el-tag v-for="(item,index) in blogTagList" :key="index" size="small"
@@ -67,7 +74,8 @@ export default {
       queryLock: false,
       queryClass: [],
       queryTag: [],
-      listEmpty: false
+      listEmpty: false,
+      keepalive:false
     }
   },
   async created() {
@@ -223,6 +231,7 @@ export default {
     next()
   },
   deactivated() {
+    this.keepalive = true
     window.sessionStorage.setItem('scrollTop', this.$refs.page.scrollTop)
   }
 }
@@ -343,6 +352,11 @@ $colors: (
       padding-right: 20px;
       flex-grow: 0;
       position: relative;
+      &.animation {
+        transform: translateY(50px);
+        opacity: 0;
+        animation: slide-in 0.2s forwards;
+      }
       .is-top {
         display: block;
         position: absolute;
@@ -385,11 +399,11 @@ $colors: (
           }
         }
       }
-      // @for $i from 1 through 12 {
-      //   &:nth-child(#{$i}n) {
-      //     animation-delay: $i * 0.04s;
-      //   }
-      // }
+      @for $i from 1 through 12 {
+        &:nth-child(#{$i}n) {
+          animation-delay: $i * 0.02s;
+        }
+      }
     }
 
     @media screen and (min-width: 2001px) and (max-width: 3000px) {
