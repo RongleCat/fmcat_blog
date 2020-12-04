@@ -9,7 +9,7 @@
   "dependencies": {
     "dayjs": "^1.8.11",
     "element-ui": "^2.4.5",
-    "highlight.js": "^9.15.6",
+    "highlight.js": "^10.4.1",
     "keyboardjs": "^2.5.1",
     "mavon-editor": "^2.7.2",
     "socket.io-client": "^2.2.0",
