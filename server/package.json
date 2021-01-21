@@ -24,7 +24,7 @@
     "lodash": "^4.17.11",
     "mysql": "^2.16.0",
     "pug": "^2.0.0-rc.1",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "nodemon": "^1.8.1"
