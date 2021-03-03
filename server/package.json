@@ -23,7 +23,7 @@
     "koa2-cors": "^2.0.6",
     "lodash": "^4.17.11",
     "mysql": "^2.16.0",
-    "pug": "^2.0.0-rc.1",
+    "pug": "^3.0.1",
     "socket.io": "^2.2.0"
   },
   "devDependencies": {
